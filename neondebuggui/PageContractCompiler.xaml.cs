@@ -27,22 +27,7 @@ namespace client
         {
             InitializeComponent();
         }
-        public void ClearLog()
-        {
-            Action safelog = () =>
-            {
-                this.listDebug.Items.Clear();
-            };
-            this.Dispatcher.Invoke(safelog);
-        }
-        public void Log(string log)
-        {
-            Action<string> safelog = (_log) =>
-            {
-                this.listDebug.Items.Add(_log);
-            };
-            this.Dispatcher.Invoke(safelog, log);
-        }
+
         public class HighlightCurrentLineBackgroundRenderer : IBackgroundRenderer
         {
             private TextEditor _editor;
@@ -78,7 +63,7 @@ namespace client
         public class Result
         {
             public string script_hash;
-            public string srcfile;
+            public string source;
             public byte[] avm;
             public string debuginfo;
         }
@@ -109,6 +94,15 @@ namespace client
                   }
               };
         }
+        public static string Bytes2HexString(byte[] data)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var d in data)
+            {
+                sb.Append(d.ToString("x02"));
+            }
+            return sb.ToString();
+        }
         public static byte[] HexString2Bytes(string str)
         {
             if (str.IndexOf("0x") == 0)
@@ -120,27 +114,18 @@ namespace client
             }
             return outd;
         }
-        void updateASM(string hex)
+        void updateASM(byte[] hexdata)
         {
             listASM.Items.Clear();
             //build asm
             ThinNeo.Compiler.Op[] ops = null;
             try
             {
-                var data = HexString2Bytes(hex);
+                var data = hexdata;
                 ops = ThinNeo.Compiler.Avm2Asm.Trans(data);
                 foreach (var op in ops)
                 {
-                    var str = "";
-                    try
-                    {
-                        str = op.ToString();
-                    }
-                    catch
-                    {
-                        str = "op fail:";
-                    }
-                    listASM.Items.Add(str);
+                    listASM.Items.Add(op);
                 }
             }
             catch (Exception err)
@@ -164,6 +149,42 @@ namespace client
                 codeEdit.TextArea.TextView.InvalidateLayer(KnownLayer.Background);
             }
 
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //加载avm
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
+            ofd.Title = "open [TXID].Avm that builded by neondebug.";
+            ofd.Filter = "*.avm|*.avm";
+            if (ofd.ShowDialog() == true)
+            {
+                this.buildResult = new Result();
+                var path = System.IO.Path.GetDirectoryName(ofd.FileName);
+                var hash = System.IO.Path.GetFileNameWithoutExtension(ofd.FileName);
+                this.buildResult.script_hash = hash;
+
+                this.buildResult.avm = System.IO.File.ReadAllBytes(ofd.FileName);
+                var debuginfopath = System.IO.Path.Combine(path, hash + ".map.json");
+                if (System.IO.File.Exists(debuginfopath) == false)
+                {
+                    MessageBox.Show("cannot find:" + debuginfopath);
+                    return;
+                }
+                this.buildResult.debuginfo = System.IO.File.ReadAllText(debuginfopath);
+                var srcpath = System.IO.Path.Combine(path, hash + ".cs");
+                if (System.IO.File.Exists(srcpath) == false)
+                {
+                    MessageBox.Show("cannot find:" + srcpath);
+                    return;
+                }
+                this.buildResult.source = System.IO.File.ReadAllText(srcpath);
+
+                this.debugInfo = ThinNeo.Debug.Helper.AddrMap.FromJsonStr(this.buildResult.debuginfo);
+                this.codeEdit.Text = this.buildResult.source;
+                this.textHexScript.Text = Bytes2HexString(this.buildResult.avm);
+                updateASM(this.buildResult.avm);
+            }
         }
     }
 }

@@ -23,24 +23,31 @@ namespace ThinNeo.Compiler
         public ParamType paramType;
         public override string ToString()
         {
-            var name = getCodeName();
-            if (paramType == ParamType.None)
+            try
             {
+                var name = getCodeName();
+                if (paramType == ParamType.None)
+                {
 
+                }
+                else if (paramType == ParamType.ByteArray)
+                {
+                    name += "[" + AsHexString() + "]";
+                }
+                else if (paramType == ParamType.String)
+                {
+                    name += "[" + AsString() + "]";
+                }
+                else if (paramType == ParamType.Addr)
+                {
+                    name += "[" + AsAddr() + "]";
+                }
+                return addr.ToString("x04") + ":" + name;
             }
-            else if (paramType == ParamType.ByteArray)
+            catch(Exception err)
             {
-                name += "[" + AsHexString() + "]";
+                return "op fail:";
             }
-            else if (paramType == ParamType.String)
-            {
-                name += "[" + AsString() + "]";
-            }
-            else if (paramType == ParamType.Addr)
-            {
-                name += "[" + AsAddr() + "]";
-            }
-            return addr.ToString("x04") + ":" + name;
         }
         public string AsHexString()
         {

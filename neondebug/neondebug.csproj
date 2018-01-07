@@ -59,6 +59,7 @@
     <Compile Include="MSIL\ILModule.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="myjson.cs" />
+    <Compile Include="OpCode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RIPEMD160Managed.cs" />
@@ -72,10 +73,6 @@
     <ProjectReference Include="..\Mono.Cecil.Pdb\Mono.Cecil.Pdb.csproj">
       <Project>{cea7a85f-2523-4ad0-8296-6e8e0a2e6df7}</Project>
       <Name>Mono.Cecil.Pdb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\vm\vm.csproj">
-      <Project>{056130c9-8702-4564-9074-c5e063813ce0}</Project>
-      <Name>vm</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

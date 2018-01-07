@@ -1,0 +1,11 @@
+/neondebug/bin
+/neondebug/obj
+/neondebug/.vs
+/.vs
+/Mono.Cecil.20/obj
+/Mono.Cecil.20/bin
+/Mono.Cecil.Pdb/bin
+/Mono.Cecil.Pdb/obj
+/vm/bin
+/vm/obj
+/packages

@@ -1,0 +1,58 @@
+﻿<Page x:Class="client.ContractCompiler"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" 
+      xmlns:local="clr-namespace:client"
+      mc:Ignorable="d" 
+      d:DesignHeight="604.348" d:DesignWidth="996.739"
+      Title="ContractCompiler" Loaded="Page_Loaded">
+
+    <Grid Background="#FFE5E5E5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="47*"/>
+            <ColumnDefinition Width="628*"/>
+            <ColumnDefinition Width="264*"/>
+            <ColumnDefinition Width="588*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="29"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <GroupBox Header ="code" Margin="0" Grid.Row="1" Grid.ColumnSpan="2"
+                              FocusManager.IsFocusScope="True">
+            <avalonedit:TextEditor x:Name="codeEdit"
+                                       ShowLineNumbers="True"    SyntaxHighlighting="C#" FontSize="10pt" 
+                                   Text="
+using Neo.SmartContract.Framework;&#13;
+using Neo.SmartContract.Framework.Services.Neo;&#13;
+using Neo.SmartContract.Framework.Services.System;&#13;
+&#13;
+class A : SmartContract&#13;
+{&#13;
+    public static int Main() &#13;
+    {&#13;
+        return 1;&#13;
+    }&#13;
+}&#13;" />
+        </GroupBox>
+        <GroupBox Header="ContractHex" Margin="0" Grid.Column="3" Grid.Row="1">
+            <TextBox x:Name="textHexScript" Margin="1,0,0,0" TextWrapping="Wrap" Text="TextBlock" IsReadOnly="True"/>
+        </GroupBox>
+        <GroupBox Grid.Column="2" Header="AVM ASM" Margin="0" Grid.Row="1" FocusManager.IsFocusScope="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="25*"/>
+                    <RowDefinition Height="346*"/>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="listASM" Margin="0" SelectionChanged="listASM_SelectionChanged" Grid.Row="1" MinHeight="3"/>
+                <TextBlock x:Name="textAsm" TextWrapping="Wrap" Text="TextBlock"/>
+            </Grid>
+
+        </GroupBox>
+        <Button Grid.ColumnSpan="2" Content="load" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Button" Grid.Column="1" HorizontalAlignment="Left" Margin="204,5,0,0" VerticalAlignment="Top" Width="75"/>
+
+    </Grid>
+</Page>

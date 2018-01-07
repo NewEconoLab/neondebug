@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil.Pdb", "Mono.Ceci
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vm", "vm\vm.csproj", "{056130C9-8702-4564-9074-C5E063813CE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "neondebuggui", "..\neondebuggui\neondebuggui.csproj", "{29265FA5-9DDD-4BBA-ACF5-509BB27037F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "neondebuggui", "neondebuggui\neondebuggui.csproj", "{29265FA5-9DDD-4BBA-ACF5-509BB27037F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

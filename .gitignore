@@ -9,3 +9,5 @@
 /vm/bin
 /vm/obj
 /packages
+/neondebuggui/obj
+/neondebuggui/bin

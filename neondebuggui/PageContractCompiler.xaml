@@ -52,9 +52,9 @@ class A : SmartContract&#13;
 
         </GroupBox>
         <Button Grid.ColumnSpan="2" Content="load avm from file" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="129" Click="Button_Click"/>
-        <Button Content="load from server" Grid.Column="1" HorizontalAlignment="Left" Margin="113,5,0,0" VerticalAlignment="Top" Width="126"/>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,5,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2"/>
-        <Button Content="Upload this to Server" Grid.Column="3" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="131"/>
+        <Button Content="load from server" Grid.Column="1" HorizontalAlignment="Left" Margin="113,5,0,0" VerticalAlignment="Top" Width="126" IsEnabled="False"/>
+        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,5,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2" IsEnabled="False"/>
+        <Button Content="Upload this to Server" Grid.Column="3" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="131" IsEnabled="False"/>
 
     </Grid>
 </Page>

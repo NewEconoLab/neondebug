@@ -150,9 +150,11 @@ namespace client
             }
 
         }
-
+        string loadedhash = null;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            loadedhash = null;
+            textHash.Text = "";
             //加载avm
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
             ofd.Title = "open [TXID].Avm that builded by neondebug.";
@@ -184,7 +186,59 @@ namespace client
                 this.codeEdit.Text = this.buildResult.source;
                 this.textHexScript.Text = Bytes2HexString(this.buildResult.avm);
                 updateASM(this.buildResult.avm);
+                System.IO.File.Delete(System.IO.Path.Combine("tempScript", hash + ".avm"));
+                System.IO.File.Delete(System.IO.Path.Combine("tempScript", hash + ".map.json"));
+                System.IO.File.Delete(System.IO.Path.Combine("tempScript", hash + ".cs"));
+                System.IO.File.Copy(ofd.FileName, System.IO.Path.Combine("tempScript", hash + ".avm"));
+                System.IO.File.Copy(debuginfopath, System.IO.Path.Combine("tempScript", hash + ".map.json"));
+                System.IO.File.Copy(srcpath, System.IO.Path.Combine("tempScript", hash + ".cs"));
+                loadedhash = hash;
+                textHash.Text = loadedhash;
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ApiHelper.uploadScript(textAPI.Text, "tempScript", loadedhash);
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            MyJson.JsonNode_Object result = ApiHelper.downloadScript(textAPI.Text, "tempScript", textHash.Text);
+            if(result==null)
+            {
+                MessageBox.Show("下载错误");
+                return;
+            }
+
+            var hash = result["hash"].AsString();
+            string path = "tempScript";
+            this.buildResult = new Result();
+            this.buildResult.script_hash = hash;
+
+            var avmpath = System.IO.Path.Combine("tempScript", hash + ".avm");
+
+
+            this.buildResult.avm = System.IO.File.ReadAllBytes(avmpath);
+
+            var debuginfopath = System.IO.Path.Combine(path, hash + ".map.json");
+            if (System.IO.File.Exists(debuginfopath) == false)
+            {
+                MessageBox.Show("cannot find:" + debuginfopath);
+                return;
+            }
+            this.buildResult.debuginfo = System.IO.File.ReadAllText(debuginfopath);
+            var srcpath = System.IO.Path.Combine(path, hash + ".cs");
+            if (System.IO.File.Exists(srcpath) == false)
+            {
+                MessageBox.Show("cannot find:" + srcpath);
+                return;
+            }
+            this.buildResult.source = System.IO.File.ReadAllText(srcpath);
+            this.debugInfo = ThinNeo.Debug.Helper.AddrMap.FromJsonStr(this.buildResult.debuginfo);
+            this.codeEdit.Text = this.buildResult.source;
+            this.textHexScript.Text = Bytes2HexString(this.buildResult.avm);
+            updateASM(this.buildResult.avm);
         }
     }
 }

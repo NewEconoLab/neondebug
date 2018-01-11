@@ -21,7 +21,7 @@ namespace ThinNeo.Debug
         public bool LoadScript(string scriptid)
         {
             var scriptAvm = System.IO.Path.Combine(pathScript, scriptid + ".avm");
-            var scriptMap = System.IO.Path.Combine(pathScript, scriptid + ".debug.json");
+            var scriptMap = System.IO.Path.Combine(pathScript, scriptid + ".map.json");
             var scriptSrc = System.IO.Path.Combine(pathScript, scriptid + ".cs");
             if (System.IO.File.Exists(scriptAvm) == false)
             {

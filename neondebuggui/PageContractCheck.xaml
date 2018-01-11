@@ -17,25 +17,17 @@
             <ColumnDefinition Width="588*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="29"/>
+            <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <GroupBox Header ="code" Margin="0" Grid.Row="1" Grid.ColumnSpan="2"
                               FocusManager.IsFocusScope="True">
             <avalonedit:TextEditor x:Name="codeEdit"
                                        ShowLineNumbers="True"    SyntaxHighlighting="C#" FontSize="10pt" 
-                                   Text="
-using Neo.SmartContract.Framework;&#13;
-using Neo.SmartContract.Framework.Services.Neo;&#13;
-using Neo.SmartContract.Framework.Services.System;&#13;
-&#13;
-class A : SmartContract&#13;
-{&#13;
-    public static int Main() &#13;
-    {&#13;
-        return 1;&#13;
-    }&#13;
-}&#13;" />
+                                   Text="//这里并不能编译代码
+                                   &#xA;//选中一个[txid].avm 文件可以查看和用来调试
+                                   &#xA;//can not compile code here.
+                                   &#xA;//load a [txid].avm can used for debug or upload 2 server." />
         </GroupBox>
         <GroupBox Header="ContractHex" Margin="0" Grid.Column="3" Grid.Row="1">
             <TextBox x:Name="textHexScript" Margin="1,0,0,0" TextWrapping="Wrap" Text="TextBlock" IsReadOnly="True"/>
@@ -51,10 +43,11 @@ class A : SmartContract&#13;
             </Grid>
 
         </GroupBox>
-        <Button Grid.ColumnSpan="2" Content="load avm from file" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="129" Click="Button_Click"/>
-        <Button Content="load from server" Grid.Column="1" HorizontalAlignment="Left" Margin="113,5,0,0" VerticalAlignment="Top" Width="126" IsEnabled="False"/>
-        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,5,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2" IsEnabled="False"/>
-        <Button Content="Upload this to Server" Grid.Column="3" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="131" IsEnabled="False"/>
+        <Button Grid.ColumnSpan="2" Content="load avm from file" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="129" Click="Button_Click" Height="19"/>
+        <Button Content="load from server" Grid.Column="1" HorizontalAlignment="Left" Margin="113,31,0,0" VerticalAlignment="Top" Width="126" IsEnabled="True" Height="19" Click="Button_Click_2"/>
+        <TextBox x:Name="textAPI" Text="http://47.96.168.8:81/api/testnet/" Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2" IsEnabled="True"/>
+        <Button Content="Upload this to Server" Grid.Column="3" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="131" IsEnabled="True" Click="Button_Click_1" Height="19"/>
+        <TextBox x:Name="textHash" Text="0xad8ae7b76e9815e6b91d24730ba76dae04ab2118" Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2" IsEnabled="True"/>
 
     </Grid>
 </Page>

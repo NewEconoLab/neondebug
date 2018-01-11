@@ -730,7 +730,7 @@ namespace Neo.Compiler.MSIL
             }
             else if (calltype == 2)
             {
-                _Convert1by1(callcode, null, to);
+                _Convert1by1(callcode, src, to);
                 return 0;
             }
             else if (calltype == 3)

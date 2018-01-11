@@ -54,7 +54,7 @@ namespace client
                 {
                     var mapResult = json["map"].AsString();
                     mapResult = Uri.UnescapeDataString(mapResult);
-                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".debug.json");
+                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".map.json");
                     System.IO.File.WriteAllText(outfile, mapResult);
                 }
             }
@@ -114,7 +114,7 @@ namespace client
                 debugtool.fullLog.script.GetAllScriptName(scriptnames);
                 foreach (var s in scriptnames)
                 {
-                    downloadScript(this.textAPI.Text, pathScript, s);
+                    downloadScript(this.textAPITran.Text, pathScript, s);
                     var b = debugtool.LoadScript(s);
                     this.listLoadInfo.Items.Add("script:" + b + ":" + s);
                 }
@@ -415,38 +415,7 @@ namespace client
 
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            var wc = new MyWebClient();
-            //testApi
-            var apitext = textAPI.Text;
-            try
-            {
-                var str = wc.DownloadString(apitext + "help");
-                MessageBox.Show("api ok:" + str);
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("api fail:" + err.Message, "", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            var wc = new MyWebClient();
-
-            var apitext = textAPITran.Text;
-            try
-            {
-                var str = wc.DownloadString(apitext + "?jsonrpc=2.0&id=1&method=getblockcount&params=[]");
-                MessageBox.Show("api ok:" + str);
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("api fail:" + err.Message, "", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {

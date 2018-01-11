@@ -6,7 +6,7 @@
             xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" 
       xmlns:local="clr-namespace:client"
       mc:Ignorable="d" 
-      d:DesignHeight="781.449" d:DesignWidth="1384.691"
+      d:DesignHeight="800" d:DesignWidth="1384.691"
       Title="ContractDebug" Loaded="Page_Loaded">
 
     <Grid Background="#FFE5E5E5" FocusManager.IsFocusScope="True">
@@ -16,48 +16,28 @@
             <RowDefinition Height="250*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="205*"/>
-            <ColumnDefinition Width="66*"/>
-            <ColumnDefinition Width="64*"/>
-            <ColumnDefinition Width="117*"/>
-            <ColumnDefinition Width="115*"/>
-            <ColumnDefinition Width="159*"/>
+            <ColumnDefinition Width="391*"/>
+            <ColumnDefinition Width="126*"/>
+            <ColumnDefinition Width="146*"/>
+            <ColumnDefinition Width="199*"/>
+            <ColumnDefinition Width="220*"/>
+            <ColumnDefinition Width="303*"/>
         </Grid.ColumnDefinitions>
-        <GroupBox Header="Value tool" Grid.Column="2" Grid.ColumnSpan="2">
+        <GroupBox Header="Value tool" Grid.Column="3" Grid.ColumnSpan="3">
             <TreeView x:Name="treeData"></TreeView>
         </GroupBox>
-        <GroupBox Header="API" Margin="0" Grid.Column="4" Grid.ColumnSpan="2">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="155*"/>
-                    <ColumnDefinition Width="356*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="47*"/>
-                </Grid.RowDefinitions>
-                <Label Content="download contract API" Margin="0" Grid.RowSpan="1" Grid.ColumnSpan="2"/>
-                <TextBox x:Name="textAPI" Margin="0" TextWrapping="Wrap" Text="http://47.96.168.8:82/_api/" Grid.Column="1" VerticalAlignment="Center" Height="24" Grid.RowSpan="2" />
-                <Button Content="TestAPI" Margin="10" Grid.Row="1" Click="Button_Click_1"/>
-                <Label Content="transaction log API" Margin="0" Grid.Row="2" Grid.RowSpan="1" Grid.ColumnSpan="2"/>
-                <TextBox x:Name="textAPITran" Margin="0,0,2,0" Grid.Row="2" TextWrapping="Wrap" Text="http://47.96.168.8:81/api/testnet/" Grid.Column="1" VerticalAlignment="Center" Height="24" Grid.RowSpan="2" />
-                <Button Content="TestAPI" Margin="10" Grid.Row="3" Click="Button_Click_2"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox Header="调试交易 Debug TransAction" Margin="0" Grid.RowSpan="1" Grid.ColumnSpan="2">
+        <GroupBox Header="调试交易 Debug TransAction" Margin="0" Grid.RowSpan="1" Grid.ColumnSpan="3">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="85"/>
-                    <RowDefinition Height="99*"/>
+                    <RowDefinition Height="121"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="交易ID TXID" VerticalAlignment="Top"/>
-                <TextBox x:Name="textTid" Height="39" Margin="10,20,0,0" TextWrapping="Wrap" Text="0xfc84ab554efb7b2e1e18eb5cdb63d2220bc10eac336ff6957af4775b2c8cb5ac" VerticalAlignment="Top" Width="460"/>
-                <Button Content="Load" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Grid.RowSpan="2"/>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="交易ID TXID" VerticalAlignment="Top" Height="15" Width="68"/>
+                <TextBox x:Name="textTid" Height="37" Margin="140,74,10,0" TextWrapping="Wrap" Text="0xfc84ab554efb7b2e1e18eb5cdb63d2220bc10eac336ff6957af4775b2c8cb5ac" VerticalAlignment="Top"/>
+                <Button Content="LoadFromServer" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="125" Click="Button_Click" Height="19"/>
                 <ListBox x:Name="listLoadInfo" Margin="0,0,1,0" Grid.Row="1"/>
-                <Button Content="LoadFromFile" HorizontalAlignment="Left" Margin="103,64,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_3" />
+                <Button Content="LoadFromFile" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_3" Height="19" />
+                <TextBox x:Name="textAPITran" Margin="140,44,10,53" TextWrapping="Wrap" Text="http://47.96.168.8:81/api/testnet/" VerticalAlignment="Center" Height="24" />
 
             </Grid>
         </GroupBox>

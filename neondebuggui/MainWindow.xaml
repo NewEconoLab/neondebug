@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:neondebuggui"
         mc:Ignorable="d"
-        Title="Contract Check and OpenSource tool" Height="437.5" Width="525">
+        Title="Contract Check and OpenSource tool" Height="800" Width="1280">
     <TabControl>
         <TabItem Header="Check Contract">
             <Frame Content="Frame" Source="/neondebuggui;component/PageContractCheck.xaml">

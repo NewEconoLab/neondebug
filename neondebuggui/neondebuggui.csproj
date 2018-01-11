@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>neondebuggui</RootNamespace>
     <AssemblyName>neondebuggui</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +60,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,24 +71,25 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="avm2asm\addresstool.cs" />
-    <Compile Include="avm2asm\avm2asm.cs" />
-    <Compile Include="avm2asm\byteReader.cs" />
-    <Compile Include="avm2asm\MyJson.cs" />
-    <Compile Include="avm2asm\op.cs" />
-    <Compile Include="avm2asm\OpCode.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PageContractCompiler.xaml">
+    <Page Include="PageContractCheck.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PageTransactionDebug.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PageContractCompiler.xaml.cs">
-      <DependentUpon>PageContractCompiler.xaml</DependentUpon>
+    <Compile Include="PageContractCheck.xaml.cs">
+      <DependentUpon>PageContractCheck.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PageTransactionDebug.xaml.cs">
+      <DependentUpon>PageTransactionDebug.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -110,14 +115,18 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\neondebug\neondebug.csproj">
-      <Project>{47cec62d-0f4a-434d-a621-1b6433d427a4}</Project>
-      <Name>neondebug</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="ICSharpCode.AvalonEdit.dll" />
     <Resource Include="ICSharpCode.AvalonEdit.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\llvm\llvm.csproj">
+      <Project>{100e757b-be8d-4d7f-8c83-c610f1bb003e}</Project>
+      <Name>llvm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\thinSDK\thinSDK.csproj">
+      <Project>{25ac63a4-1908-448b-85d4-ed8af5509f68}</Project>
+      <Name>thinSDK</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

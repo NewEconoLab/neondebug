@@ -11,3 +11,7 @@
 /packages
 /neondebuggui/obj
 /neondebuggui/bin
+/llvm/obj
+/llvm/bin
+/thinSDK/bin
+/thinSDK/obj

@@ -6,7 +6,17 @@
         xmlns:local="clr-namespace:neondebuggui"
         mc:Ignorable="d"
         Title="Contract Check and OpenSource tool" Height="437.5" Width="525">
-    <Frame Content="Frame" Source="/neondebuggui;component/PageContractCompiler.xaml">
+    <TabControl>
+        <TabItem Header="Check Contract">
+            <Frame Content="Frame" Source="/neondebuggui;component/PageContractCheck.xaml">
 
-    </Frame>
+            </Frame>
+        </TabItem>
+        <TabItem Header="Debug Transaction">
+            <Frame Content="Frame" Source="/neondebuggui;component/PageTransactionDebug.xaml">
+
+            </Frame>
+        </TabItem>
+    </TabControl>
+
 </Window>

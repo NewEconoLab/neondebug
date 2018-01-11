@@ -283,7 +283,7 @@ namespace Neo.Compiler.MSIL
                 {
                     return true;
                 }
-                if(attr.AttributeType.Name== "NonemitWithConvertAttribute")
+                if (attr.AttributeType.Name == "NonemitWithConvertAttribute")
                 {
                     throw new Exception("NonemitWithConvert func only used for readonly static field.");
                 }
@@ -884,6 +884,12 @@ namespace Neo.Compiler.MSIL
                         skip++;
                         start = method.GetNextCodeAddr(start);
                         _code = method.body_Codes[start];
+                        bool bLdLoc = (_code.code == CodeEx.Ldloc || _code.code == CodeEx.Ldloc_0 || _code.code == CodeEx.Ldloc_1 || _code.code == CodeEx.Ldloc_2 || _code.code == CodeEx.Ldloc_3 || _code.code == CodeEx.Ldloc_S);
+                        if (bLdLoc == false)//说明根本没有初始化的意思
+                        {
+                            this._ConvertPush(outbyte, src, to);
+                            return 0;
+                        }
                         while (true)
                         {
                             int start2 = method.GetNextCodeAddr(start);
@@ -895,9 +901,9 @@ namespace Neo.Compiler.MSIL
                             var _code2 = method.body_Codes[start2];
                             var _code3 = method.body_Codes[start3];
                             var _code4 = method.body_Codes[start4];
-                            bool bLdLoc = (_code.code == CodeEx.Ldloc || _code.code == CodeEx.Ldloc_0 || _code.code == CodeEx.Ldloc_1 || _code.code == CodeEx.Ldloc_2 || _code.code == CodeEx.Ldloc_3 || _code.code == CodeEx.Ldloc_S);
+                            bLdLoc = (_code.code == CodeEx.Ldloc || _code.code == CodeEx.Ldloc_0 || _code.code == CodeEx.Ldloc_1 || _code.code == CodeEx.Ldloc_2 || _code.code == CodeEx.Ldloc_3 || _code.code == CodeEx.Ldloc_S);
                             bool bStelem = (_code4.code == CodeEx.Stelem_I1 || _code4.code == CodeEx.Stelem_I);
-                            if(bLdLoc&&bStelem)
+                            if (bLdLoc && bStelem)
                             {
                                 var pos = _code2.tokenI32;
                                 var value = _code3.tokenI32;
@@ -906,7 +912,7 @@ namespace Neo.Compiler.MSIL
                                 skip += 4;
                                 start = method.GetNextCodeAddr(start4);
                             }
-                            else if(bLdLoc&&!bStelem)
+                            else if (bLdLoc && !bStelem)
                             {
                                 skip++;
                                 break;

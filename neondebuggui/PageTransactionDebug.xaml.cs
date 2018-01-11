@@ -99,16 +99,16 @@ namespace client
             if (System.IO.Directory.Exists(pathScript) == false)
                 System.IO.Directory.CreateDirectory(pathScript);
             this.listLoadInfo.Items.Clear();
-            //try
-            //{
-            //    try
-            //    {
+            try
+            {
+                try
+                {
                     debugtool.Load(pathLog, pathScript, transid);
-                //}
-                //catch (Exception err1)
-                //{
-                //    this.listLoadInfo.Items.Add(err1.Message);
-                //}
+                }
+                catch (Exception err1)
+                {
+                    this.listLoadInfo.Items.Add(err1.Message);
+                }
                 this.listLoadInfo.Items.Add("load finish");
                 List<string> scriptnames = new List<string>();
                 debugtool.fullLog.script.GetAllScriptName(scriptnames);
@@ -121,12 +121,12 @@ namespace client
 
                 InitTreeCode();
                 InitCareList();
-            //}
-            //catch (Exception err)
-            //{
+            }
+            catch (Exception err)
+            {
 
-            //    this.listLoadInfo.Items.Add(err.Message);
-            //}
+                this.listLoadInfo.Items.Add(err.Message);
+            }
         }
 
         private byte[] HexString2Bytes(string transid)

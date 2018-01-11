@@ -218,7 +218,7 @@ namespace ThinNeo.Debug
         //加入outputscript，做一個補救，以前導出的log樹層次可能是錯的
         void ExecuteScript(State runstate, SmartContract.Debug.LogScript script)
         {
-            //try
+            try
             {
                 runstate.PushExe(script.hash);
                 foreach (var op in script.ops)
@@ -301,10 +301,10 @@ namespace ThinNeo.Debug
                     }
                 }
             }
-            //catch (Exception err)
-            //{
-            //    throw new Exception("error in:" + err.Message);
-            //}
+            catch (Exception err)
+            {
+                throw new Exception("error in:" + err.Message);
+            }
         }
     }
 }

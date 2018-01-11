@@ -34,7 +34,7 @@ namespace ThinNeo.Debug.Helper
         {
             foreach (var m in methods)
             {
-                var i = m.GetLine(addr - m.startAddr);
+                var i = m.GetLine(addr);
                 if (i > 0)
                     return i;
             }
@@ -42,9 +42,10 @@ namespace ThinNeo.Debug.Helper
         }
         public int GetLineBack(int addr)
         {
-            foreach (var m in methods)
+            for (var _i = methods.Count - 1;_i >= 0;_i--)
             {
-                var i = m.GetLineBack(addr - m.startAddr);
+                var m = methods[_i];
+                var i = m.GetLineBack(addr);
                 if (i > 0)
                     return i;
             }
@@ -73,7 +74,12 @@ namespace ThinNeo.Debug.Helper
                 }
                 minfo.Sort();
                 info.methods.Add(minfo);
+                info.methods.Sort((a, b) =>
+                {
+                    return a.startAddr - b.startAddr;
+                });
             }
+            
             //        [{"name":"Main","addr":"0000","map":["0011-11","0012-12","0023-14","004C-16707566","0054-15","0055-16","0074-17","007F-19","00B0-25","00C2-26","00D4-27","00E1-29","0101-32","0139-33","0155-34","0160-35"]
             //}]
             return info;

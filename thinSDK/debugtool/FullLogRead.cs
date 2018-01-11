@@ -75,10 +75,10 @@ namespace ThinNeo.SmartContract.Debug
             if (type == "Array" || type == "Struct")
             {
                 string outstr = type + "[";
-                for(var i=0;i<subItems.Count;i++)
+                for (var i = 0; i < subItems.Count; i++)
                 {
                     outstr += subItems[i].ToShortString();
-                    if(i!=subItems.Count-1)
+                    if (i != subItems.Count - 1)
                     {
                         outstr += ",";
                     }
@@ -95,7 +95,7 @@ namespace ThinNeo.SmartContract.Debug
         {
             if (type == "Array" || type == "Struct")
             {
-                string outstr =  "[";
+                string outstr = "[";
                 for (var i = 0; i < subItems.Count; i++)
                 {
                     outstr += subItems[i].ToShortString();
@@ -214,6 +214,18 @@ namespace ThinNeo.SmartContract.Debug
             return script;
 
         }
+        public LogScript Clone()
+        {
+            LogScript s = new LogScript(this.hash);
+            s.parent = this;
+            s.ops = new List<LogOp>();
+            foreach(var o in this.ops)
+            {
+                s.ops.Add(o.Clone());
+            }
+
+            return s;
+        }
     }
     public class LogOp
     {
@@ -326,7 +338,7 @@ namespace ThinNeo.SmartContract.Debug
                     _op.stack[i] = new Op(type, ind);
                 }
             }
-            if(json.ContainsKey("param"))
+            if (json.ContainsKey("param"))
             {
                 _op.param = ThinNeo.Debug.DebugTool.HexString2Bytes(json["param"].AsString());
             }
@@ -339,6 +351,29 @@ namespace ThinNeo.SmartContract.Debug
                 _op.subScript = LogScript.FromJson(json["subscript"] as MyJson.JsonNode_Object);
             }
             return _op;
+        }
+        public LogOp Clone()
+        {
+            LogOp op = new LogOp(this.addr,this.op);
+            op.error = this.error;
+            if (this.stack != null)
+            {
+                op.stack = new Op[this.stack.Length];
+                for (var i = 0; i < this.stack.Length; i++)
+                {
+                    op.stack[i] = this.stack[i];
+                }
+            }
+            if (this.param != null)
+            {
+                op.param = this.param.Clone() as byte[];
+            }
+            if (this.opresult != null)
+            {
+                op.opresult = this.opresult.Clone();
+            }
+            op.subScript = this.subScript;
+            return op;
         }
     }
 

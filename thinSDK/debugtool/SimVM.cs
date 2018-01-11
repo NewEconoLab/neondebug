@@ -204,38 +204,63 @@ namespace ThinNeo.Debug
             stateClone = new Dictionary<int, State>();
             mapState = new Dictionary<SmartContract.Debug.LogOp, int>();
             careinfo = new List<CareItem>();
+
+            regenScript = new SmartContract.Debug.LogScript(FullLog.script.hash);
+            lastScript = regenScript;
+
             ExecuteScript(runstate, FullLog.script);
         }
+        SmartContract.Debug.LogScript lastScript = null;
+        public SmartContract.Debug.LogScript regenScript;
         public Dictionary<int, State> stateClone;
         public Dictionary<SmartContract.Debug.LogOp, int> mapState;
         public List<CareItem> careinfo;
+        //加入outputscript，做一個補救，以前導出的log樹層次可能是錯的
         void ExecuteScript(State runstate, SmartContract.Debug.LogScript script)
         {
-            try
+            //try
             {
                 runstate.PushExe(script.hash);
                 foreach (var op in script.ops)
                 {
+                    var _nop = op.Clone();
+                    lastScript.ops.Add(_nop);
                     try
                     {
                         if (op.op == VM.OpCode.APPCALL)//不造成栈影响，由目标script影响
                         {
                             var _script = op.subScript;
-                            if (op.subScript == null)
-                            {
-                                _script = new SmartContract.Debug.LogScript(runstate.CalcStack.Peek().strvalue);
-                            }
+                            var outscript = new SmartContract.Debug.LogScript(op.subScript.hash);
+                            outscript.parent = lastScript;
+                            _nop.subScript = outscript;
+                            lastScript = outscript;
+
                             ExecuteScript(runstate, _script);
                             mapState[op] = runstate.StateID;
                         }
-                        else if (op.op == VM.OpCode.CALL)//不造成栈影响 就是个jmp
+                        else if (op.op == VM.OpCode.CALL)//造成栈影响 就是个jmp
                         {
+                            var _lastScript = new SmartContract.Debug.LogScript(lastScript.hash);
+                            _lastScript.parent = lastScript;
+                            _nop.subScript = _lastScript;
+
+                            lastScript = _lastScript;
                             runstate.PushExe(script.hash);
                             mapState[op] = runstate.StateID;
+                            //runstate.callcount++;
                         }
                         else if (op.op == VM.OpCode.RET)
                         {
+                            runstate.PopExe();
                             mapState[op] = runstate.StateID;
+                            //if (runstate.callcount > 0)
+                            //{
+                            //    runstate.callcount--;
+                            //}
+                            //if (runstate.callcount == 0)
+                            {
+                                lastScript = lastScript.parent;
+                            }
                         }
                         else
                         {
@@ -267,19 +292,19 @@ namespace ThinNeo.Debug
                             {
                                 stateClone[runstate.StateID] = (Debug.State)runstate.Clone();
                             }
-                            mapState[op] = runstate.StateID;
+                            mapState[_nop] = runstate.StateID;
                         }
                     }
-                    catch(Exception err1)
+                    catch (Exception err1)
                     {
-                        op.error = true;
+                        _nop.error = true;
                     }
                 }
             }
-            catch (Exception err)
-            {
-                throw new Exception("error in:" + err.Message);
-            }
+            //catch (Exception err)
+            //{
+            //    throw new Exception("error in:" + err.Message);
+            //}
         }
     }
 }

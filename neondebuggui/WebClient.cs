@@ -12,7 +12,7 @@ namespace client
         protected override WebRequest GetWebRequest(Uri address)
         {
             var req = base.GetWebRequest(address);
-            req.Timeout = 2500;
+            req.Timeout = 5500;
             return req;
         }
     }

@@ -194,6 +194,9 @@ namespace client
                 System.IO.File.Copy(srcpath, System.IO.Path.Combine("tempScript", hash + ".cs"));
                 loadedhash = hash;
                 textHash.Text = loadedhash;
+                var _hash = ThinNeo.Helper.HexString2Bytes(loadedhash);
+                var address = ThinNeo.Helper.GetAddressFromScriptHash(_hash);
+                textAddress.Text = address;
             }
         }
 
@@ -238,6 +241,7 @@ namespace client
             this.debugInfo = ThinNeo.Debug.Helper.AddrMap.FromJsonStr(this.buildResult.debuginfo);
             this.codeEdit.Text = this.buildResult.source;
             this.textHexScript.Text = Bytes2HexString(this.buildResult.avm);
+
             updateASM(this.buildResult.avm);
         }
     }

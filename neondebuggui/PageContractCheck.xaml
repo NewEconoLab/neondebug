@@ -49,7 +49,7 @@
         <Button Content="Upload this to Server" Grid.Column="3" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Width="131" IsEnabled="True" Click="Button_Click_1" Height="19"/>
         <TextBox x:Name="textHash" Text="0xad8ae7b76e9815e6b91d24730ba76dae04ab2118" Grid.Column="1" HorizontalAlignment="Left" Height="19" Margin="244,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338" Grid.ColumnSpan="2" IsEnabled="True"/>
         <Label Content="script_hash" Grid.Column="1" HorizontalAlignment="Left" Margin="171,26,0,0" VerticalAlignment="Top" Height="25" Width="68"/>
-        <TextBox IsReadOnly="True" x:Name="textAddress" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="18" Margin="244,56,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="187" Grid.Column="1"/>
+        <TextBox IsReadOnly="True" x:Name="textAddress" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="18" Margin="244,56,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="338" Grid.Column="1"/>
         <Label Content="script_address" Grid.Column="1" HorizontalAlignment="Left" Margin="152,52,0,0" VerticalAlignment="Top" Height="25" Width="87"/>
 
     </Grid>

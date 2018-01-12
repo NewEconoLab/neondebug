@@ -118,6 +118,7 @@ namespace ThinNeo.Debug.Helper
             }
             public int GetAddrBack(int line)
             {
+                if (line2addr.Count == 0) return -1;
                 if (line < line2addr.Keys.Min()) return -1;
 
                 for (var i = 0; ; i--)
@@ -138,6 +139,8 @@ namespace ThinNeo.Debug.Helper
             }
             public int GetLineBack(int addr)
             {
+                if (addr2line.Count == 0)
+                    return -1;
                 if (addr < addr2line.Keys.Min()) return -1;
 
                 for (var i = 0; ; i--)

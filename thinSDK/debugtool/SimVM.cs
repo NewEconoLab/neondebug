@@ -283,6 +283,11 @@ namespace ThinNeo.Debug
                             {
                                 lastScript = lastScript.parent;
                             }
+                            if (stateClone.ContainsKey(runstate.StateID) == false)
+                            {
+                                stateClone[runstate.StateID] = (Debug.State)runstate.Clone();
+                            }
+                            mapState[_nop] = runstate.StateID;
                         }
                         else
                         {

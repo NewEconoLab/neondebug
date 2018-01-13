@@ -234,7 +234,27 @@ namespace ThinNeo.Debug
                             outscript.parent = lastScript;
                             _nop.subScript = outscript;
                             lastScript = outscript;
+                            //有可能造成影响
+                            if (op.stack != null)
+                            {
 
+                                for (var i = 0; i < op.stack.Length; i++)
+                                {
+                                    if (i == op.stack.Length - 1)
+                                    {
+                                        runstate.CalcCalcStack(op.stack[i], op.opresult);
+                                    }
+                                    else
+                                    {
+                                        runstate.CalcCalcStack(op.stack[i], null);
+                                    }
+                                }
+                            }
+                            runstate.PushExe(script.hash);
+                            if (stateClone.ContainsKey(runstate.StateID) == false)
+                            {
+                                stateClone[runstate.StateID] = (Debug.State)runstate.Clone();
+                            }
                             ExecuteScript(runstate, _script);
                             mapState[op] = runstate.StateID;
                         }
@@ -245,13 +265,15 @@ namespace ThinNeo.Debug
                             _nop.subScript = _lastScript;
 
                             lastScript = _lastScript;
-                            runstate.PushExe(script.hash);
+
                             mapState[op] = runstate.StateID;
+
                             //runstate.callcount++;
                         }
                         else if (op.op == VM.OpCode.RET)
                         {
                             runstate.PopExe();
+
                             mapState[op] = runstate.StateID;
                             //if (runstate.callcount > 0)
                             //{

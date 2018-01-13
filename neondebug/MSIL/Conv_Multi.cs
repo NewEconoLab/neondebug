@@ -404,6 +404,7 @@ namespace Neo.Compiler.MSIL
             {
                 callpcount = to.lastparam;
                 calltype = 6;
+                to.lastparam = -1;
             }
             else if (IsOpCall(defs, out callname))
             {

@@ -256,7 +256,7 @@ namespace ThinNeo.Debug
                                 stateClone[runstate.StateID] = (Debug.State)runstate.Clone();
                             }
                             ExecuteScript(runstate, _script);
-                            mapState[op] = runstate.StateID;
+                            mapState[_nop] = runstate.StateID;
                         }
                         else if (op.op == VM.OpCode.CALL)//造成栈影响 就是个jmp
                         {
@@ -265,8 +265,8 @@ namespace ThinNeo.Debug
                             _nop.subScript = _lastScript;
 
                             lastScript = _lastScript;
-
-                            mapState[op] = runstate.StateID;
+                            runstate.PushExe(lastScript.hash);
+                            mapState[_nop] = runstate.StateID;
 
                             //runstate.callcount++;
                         }
@@ -274,7 +274,7 @@ namespace ThinNeo.Debug
                         {
                             runstate.PopExe();
 
-                            mapState[op] = runstate.StateID;
+                            //mapState[op] = runstate.StateID;
                             //if (runstate.callcount > 0)
                             //{
                             //    runstate.callcount--;

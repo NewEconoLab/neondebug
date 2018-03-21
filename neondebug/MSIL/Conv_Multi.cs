@@ -1011,6 +1011,28 @@ namespace Neo.Compiler.MSIL
                 return 0;
             }
             var type = _type.Resolve();
+
+            //如果构造函数上有一个[OpCode],替换New Array操作
+            foreach (var m in type.DeclaringType.Methods)
+            {
+                if (m.IsConstructor && m.HasCustomAttributes)
+                {
+                    foreach (var attr in m.CustomAttributes)
+                    {
+                        if (attr.AttributeType.Name == "OpCodeAttribute" ||
+                            attr.AttributeType.Name == "AppcallAttribute" ||
+                            attr.AttributeType.Name == "SyscallAttribute")
+                        {
+                            //var _type = attr.ConstructorArguments[0].Type;
+                            var value = (byte)attr.ConstructorArguments[0].Value;
+                            VM.OpCode v = (VM.OpCode)value;
+                            _Insert1(v, null, to);
+                            return 0;
+                        }
+
+                    }
+                }
+            }
             _Convert1by1(VM.OpCode.NOP, src, to);//空白
             _ConvertPush(type.DeclaringType.Fields.Count, null, to);//插入个数量
             if (type.DeclaringType.IsValueType)

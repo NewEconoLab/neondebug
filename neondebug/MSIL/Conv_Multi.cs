@@ -1019,9 +1019,7 @@ namespace Neo.Compiler.MSIL
                 {
                     foreach (var attr in m.CustomAttributes)
                     {
-                        if (attr.AttributeType.Name == "OpCodeAttribute" ||
-                            attr.AttributeType.Name == "AppcallAttribute" ||
-                            attr.AttributeType.Name == "SyscallAttribute")
+                        if (attr.AttributeType.Name == "OpCodeAttribute")
                         {
                             //var _type = attr.ConstructorArguments[0].Type;
                             var value = (byte)attr.ConstructorArguments[0].Value;

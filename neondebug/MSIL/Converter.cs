@@ -780,6 +780,8 @@ namespace Neo.Compiler.MSIL
                     _Convert1by1(VM.OpCode.SETITEM, src, to);
                     break;
 
+                case CodeEx.Isinst://支持处理as 表达式
+                    break;
                 case CodeEx.Castclass:
                     _ConvertCastclass(method, src, to);
                     break;

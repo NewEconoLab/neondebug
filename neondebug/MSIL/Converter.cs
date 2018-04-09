@@ -273,7 +273,13 @@ namespace Neo.Compiler.MSIL
                 if (c.needfixfunc)
                 {//需要地址转换
                     var addrfunc = this.outModule.mapMethods[c.srcfunc].funcaddr;
-                    Int16 addrconv = (Int16)(addrfunc - c.addr);
+                    int wantaddr = addrfunc - c.addr;
+
+                    if (wantaddr < Int16.MinValue|| wantaddr > Int16.MaxValue)
+                    {
+                        throw new Exception("addr jump is too far.");
+                    }
+                    Int16 addrconv = (Int16)wantaddr;
                     c.bytes = BitConverter.GetBytes(addrconv);
                     c.needfixfunc = false;
                 }

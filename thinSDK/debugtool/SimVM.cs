@@ -65,6 +65,17 @@ namespace ThinNeo.Debug
                 StateID++;
                 return true;
             }
+            if(op== VM.OpCode.ROT)
+            {
+                var v3 = CalcStack.Pop();
+                var v2 = CalcStack.Pop();
+                var v1 = CalcStack.Pop();
+                CalcStack.Push(v2);
+                CalcStack.Push(v3);
+                CalcStack.Push(v1);
+                StateID++;
+                return true;
+            }
             //if (op == VM.OpCode.ROLL)
             //{
             //    int n = (int)CalcStack.Pop().AsInt();
@@ -165,7 +176,8 @@ namespace ThinNeo.Debug
                 }
                 else
                 {
-                    throw new Exception("can't conver this.");
+                    this.item.strvalue = "can't convert this.";
+                    //throw new Exception("can't conver this.");
                 }
             }
             else if (name == "Neo.Storage.Put")

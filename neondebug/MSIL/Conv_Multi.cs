@@ -915,8 +915,17 @@ namespace Neo.Compiler.MSIL
                             }
                             else if (bLdLoc && !bStelem)
                             {
-                                skip++;
-                                break;
+                                //走到这里说明不是预测的数组初始化，少处理了一种情况
+                                this._ConvertPush(outbyte, src, to);
+                                //就有两种情况
+                                if (skip == 1)
+                                {
+                                    return 0;//没有初始化，那么第一个stloc 是不能跳过的
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
                             else
                             {

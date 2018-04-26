@@ -8,8 +8,12 @@ namespace Neo.Compiler
 {
     class _DebugOutput
     {
-        public static void DebugOutput(NeoModule module, byte[] avm, MyJson.JsonNode_Object abi)
+        public static void DebugOutput(string outpath, NeoModule module, byte[] avm, MyJson.JsonNode_Object abi)
         {
+            if (System.IO.Directory.Exists(outpath) == false)
+            {
+                System.IO.Directory.CreateDirectory(outpath);
+            }
             string mapInfo = null;
             string srcfile = null;
 
@@ -42,12 +46,13 @@ namespace Neo.Compiler
 
             var hash = abi["hash"].AsString();
             var abistr = abi.ToString();
-            System.IO.File.WriteAllBytes(hash + ".avm", avm);
-            System.IO.File.WriteAllText(hash + ".map.json", mapInfo);
-            System.IO.File.WriteAllText(hash + ".abi.json", abistr);
-            if(srcfile!=null)
+            var outfile = System.IO.Path.Combine(outpath, hash);
+            System.IO.File.WriteAllBytes(outfile + ".avm", avm);
+            System.IO.File.WriteAllText(outfile + ".map.json", mapInfo);
+            System.IO.File.WriteAllText(outfile + ".abi.json", abistr);
+            if (srcfile != null)
             {
-                var targetfilename = hash + ".cs";
+                var targetfilename = outfile + ".cs";
                 System.IO.File.Delete(targetfilename);
                 System.IO.File.Copy(srcfile, targetfilename);
             }

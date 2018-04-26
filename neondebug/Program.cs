@@ -16,6 +16,7 @@ namespace Neo.Compiler
         //控制台输出约定了特别的语法
         public static void Main(string[] args)
         {
+            string outpath = "C:\\Neo\\SmartContracts";
 
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -26,6 +27,9 @@ namespace Neo.Compiler
                 log.Log("need one param for DLL filename.");
                 return;
             }
+
+            log.Log("Debug output path=" + outpath);
+
             string filename = args[0];
             string onlyname = System.IO.Path.GetFileNameWithoutExtension(filename);
             string filepdb = onlyname + ".pdb";
@@ -111,6 +115,7 @@ namespace Neo.Compiler
                 log.Log("Write Bytes Error:" + err.ToString());
                 return;
             }
+            //write abi
             try
             {
 
@@ -138,7 +143,7 @@ namespace Neo.Compiler
             }
             if (bSucc)
             {
-                _DebugOutput.DebugOutput(neoM, bytes, abijson);
+                _DebugOutput.DebugOutput(outpath,neoM, bytes, abijson);
                 log.Log("SUCC");
             }
         }

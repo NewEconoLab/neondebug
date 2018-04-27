@@ -7,11 +7,6 @@
         mc:Ignorable="d"
         Title="Contract Debug Tool v0.03" Height="800" Width="1280">
     <TabControl>
-        <TabItem Header="Check Contract">
-            <Frame Content="Frame" Source="/neondebuggui;component/PageContractCheck.xaml">
-
-            </Frame>
-        </TabItem>
         <TabItem Header="Debug Transaction">
             <Frame Content="Frame" Source="/neondebuggui;component/PageTransactionDebug.xaml">
 

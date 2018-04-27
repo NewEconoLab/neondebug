@@ -64,7 +64,7 @@ namespace client
             }
         }
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
+        {//load form id
             System.Net.WebClient wc = new MyWebClient();
             string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
             string pathLog = System.IO.Path.Combine(rootPath, "tempLog");
@@ -74,30 +74,36 @@ namespace client
             byte[] info = ThinNeo.Helper.HexString2Bytes(transid.ToLower());
             transid = "0x" + ThinNeo.Helper.Bytes2HexString(info);
             if (transid != "0x00")
-            {//download and write debugfile
-                var filename = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
-                var url = textAPITran.Text + "?jsonrpc=2.0&id=1&method=getfulllog&params=[%22" + transid + "%22]";
-                var rtnstr = wc.DownloadString(url);
-                var json = MyJson.Parse(rtnstr).AsDict();
-                if (json.ContainsKey("result") == false)
-                {
-                    MessageBox.Show("找不到此交易的智能合约log。Can not find fullloginfo for this transaction.");
-                    return;
-                }
-                var txt = json["result"].AsList()[0].AsDict()["fulllog7z"].AsString();
-                System.IO.File.WriteAllText(filename, txt);
+            {
+                
             }
+            //{//download and write debugfile
+            //    var filename = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
+            //    var url = textAPITran.Text + "?jsonrpc=2.0&id=1&method=getfulllog&params=[%22" + transid + "%22]";
+            //    var rtnstr = wc.DownloadString(url);
+            //    var json = MyJson.Parse(rtnstr).AsDict();
+            //    if (json.ContainsKey("result") == false)
+            //    {
+            //        MessageBox.Show("找不到此交易的智能合约log。Can not find fullloginfo for this transaction.");
+            //        return;
+            //    }
+            //    var txt = json["result"].AsList()[0].AsDict()["fulllog7z"].AsString();
+            //    System.IO.File.WriteAllText(filename, txt);
+            //}
             LoadTxLog(transid);
         }
 
         private void LoadTxLog(string transid)
         {
-            string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
-            string pathLog = System.IO.Path.Combine(rootPath, "tempLog");
+            //string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
+            //string pathLog = System.IO.Path.Combine(rootPath, "tempLog");
 
-            string pathScript = System.IO.Path.Combine(rootPath, "tempScript");
+            string pathScript = path_Contracts.Text;// System.IO.Path.Combine(rootPath, "tempScript");
+            string pathLog = path_fulllogs.Text;
             if (System.IO.Directory.Exists(pathScript) == false)
                 System.IO.Directory.CreateDirectory(pathScript);
+            if (System.IO.Directory.Exists(pathLog) == false)
+                System.IO.Directory.CreateDirectory(pathLog);
             this.listLoadInfo.Items.Clear();
             try
             {
@@ -114,7 +120,7 @@ namespace client
                 debugtool.fullLog.script.GetAllScriptName(scriptnames);
                 foreach (var s in scriptnames)
                 {
-                    downloadScript(this.textAPITran.Text, pathScript, s);
+                    //downloadScript(this.textAPITran.Text, pathScript, s);
                     var b = debugtool.LoadScript(s);
                     this.listLoadInfo.Items.Add("script:" + b + ":" + s);
                 }
@@ -418,11 +424,11 @@ namespace client
 
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
+        {//load from file(dialog)
             var wc = new MyWebClient();
 
-            string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
-            string pathLog = System.IO.Path.Combine(rootPath, "tempLog");
+            //string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
+            string pathLog = path_fulllogs.Text;
             if (System.IO.Directory.Exists(pathLog) == false)
                 System.IO.Directory.CreateDirectory(pathLog);
 

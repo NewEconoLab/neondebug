@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ThinNeo.Debug;
 
 namespace client
 {
@@ -29,40 +30,6 @@ namespace client
         }
         public ThinNeo.Debug.DebugTool debugtool = new ThinNeo.Debug.DebugTool();
 
-        void downloadScript(string api, string savepath, string scripthash)
-        {
-            System.Net.WebClient wc = new MyWebClient();
-            try
-            {
-                var str = wc.DownloadString(api + "get?hash=" + scripthash);
-                var json = MyJson.Parse(str).AsDict();
-                if (json.ContainsKey("cs"))
-                {
-                    var srcResult = json["cs"].AsString();
-                    srcResult = Uri.UnescapeDataString(srcResult);
-                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".cs");
-                    System.IO.File.WriteAllText(outfile, srcResult);
-                }
-                if (json.ContainsKey("avm"))
-                {
-                    var avmResult = json["avm"].AsString();
-                    var bts = ThinNeo.Helper.HexString2Bytes(avmResult);
-                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".avm");
-                    System.IO.File.WriteAllBytes(outfile, bts);
-                }
-                if (json.ContainsKey("map"))
-                {
-                    var mapResult = json["map"].AsString();
-                    mapResult = Uri.UnescapeDataString(mapResult);
-                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".map.json");
-                    System.IO.File.WriteAllText(outfile, mapResult);
-                }
-            }
-            catch (Exception err)
-            {
-
-            }
-        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {//load form id
             System.Net.WebClient wc = new MyWebClient();
@@ -100,6 +67,7 @@ namespace client
 
             string pathScript = path_Contracts.Text;// System.IO.Path.Combine(rootPath, "tempScript");
             string pathLog = path_fulllogs.Text;
+            string api = server_api.Text;
             if (System.IO.Directory.Exists(pathScript) == false)
                 System.IO.Directory.CreateDirectory(pathScript);
             if (System.IO.Directory.Exists(pathLog) == false)
@@ -107,8 +75,24 @@ namespace client
             this.listLoadInfo.Items.Clear();
             try
             {
+                //服务器暂时没开启fulllog
+                //try
+                //{
+                //    //把本地要解析但没有的fulllog从服务器down下来
+                //    var tranfile = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
+                //    if (System.IO.File.Exists(tranfile) == false)
+                //    {
+                //        ApiHelper.downloadFullLog(api, pathLog, transid);
+                //    }
+                //}
+                //catch (Exception e)
+                //{
+                //    this.listLoadInfo.Items.Add(e.Message);
+                //}
+
                 try
                 {
+
                     debugtool.Load(pathLog, pathScript, transid);
                 }
                 catch (Exception err1)
@@ -120,7 +104,13 @@ namespace client
                 debugtool.fullLog.script.GetAllScriptName(scriptnames);
                 foreach (var s in scriptnames)
                 {
-                    //downloadScript(this.textAPITran.Text, pathScript, s);
+                    //把本地要解析但没有的script从服务器down下来
+                    var tranfile = System.IO.Path.Combine(pathScript, s + ".avm");
+                    if (System.IO.File.Exists(tranfile) == false)
+                    {
+                        ApiHelper.downloadScript(api, pathScript, s);
+                    }
+
                     var b = debugtool.LoadScript(s);
                     this.listLoadInfo.Items.Add("script:" + b + ":" + s);
                 }
@@ -241,6 +231,7 @@ namespace client
         {
             treeitem.Tag = script;
             treeitem.Header = "script:" + script.hash;
+
             foreach (var op in script.ops)
             {
                 TreeViewItem itemop = new TreeViewItem();

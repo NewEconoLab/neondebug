@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Neo.Compiler.MSIL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -56,6 +58,42 @@ namespace Neo.Compiler
                 System.IO.File.Delete(targetfilename);
                 System.IO.File.Copy(srcfile, targetfilename);
             }
+            new DefLogger().Log("output to local succ");
+            DebugOutputToService(hash,avm, abistr, mapInfo,System.IO.File.ReadAllText(srcfile));
         }
+
+        public static void DebugOutputToService(string hash,byte[] avm, string abi,string map,string cs)
+        {
+            System.Net.WebClient wc = new WebClient();
+            try
+            {
+                System.Collections.Specialized.NameValueCollection vs = new System.Collections.Specialized.NameValueCollection();
+                vs["jsonrpc"] = "2.0";
+                vs["id"] = "1";
+                vs["method"] = "setcontractscript";
+                MyJson.JsonNode_Array array = new MyJson.JsonNode_Array();
+
+                StringBuilder sb = new StringBuilder();
+                foreach (var d in avm)
+                {
+                    sb.Append(d.ToString("x02"));
+                }
+
+                array.Add(new MyJson.JsonNode_ValueString(hash));
+                array.Add(new MyJson.JsonNode_ValueString(sb.ToString()));
+                array.Add(new MyJson.JsonNode_ValueString(Uri.EscapeDataString(cs)));
+                array.Add(new MyJson.JsonNode_ValueString(map));
+                array.Add(new MyJson.JsonNode_ValueString(abi));
+                vs["params"] = array.ToString();
+
+                var ret = wc.UploadValues("https://apiaggr.nel.group/api/testnet", vs);
+                new DefLogger().Log(System.Text.Encoding.UTF8.GetString(ret));
+            }
+            catch (Exception err)
+            {
+                new DefLogger().Log(err.ToString());
+            }
+        }
+
     }
 }

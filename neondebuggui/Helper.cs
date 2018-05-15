@@ -23,10 +23,12 @@ namespace client
                 var avm = System.IO.File.ReadAllBytes(System.IO.Path.Combine(path, hash + ".avm"));
                 var cs = System.IO.File.ReadAllText(System.IO.Path.Combine(path, hash + ".cs"));
                 var map = System.IO.File.ReadAllText(System.IO.Path.Combine(path, hash + ".map.json"));
+                var abi = System.IO.File.ReadAllText(System.IO.Path.Combine(path, hash + ".abi.json"));
 
                 jsonmap["avm"] = new MyJson.JsonNode_ValueString(ThinNeo.Helper.Bytes2HexString(avm));
                 jsonmap["cs"] = new MyJson.JsonNode_ValueString(Uri.EscapeDataString(cs));
                 jsonmap["map"] = MyJson.Parse(map);
+                jsonmap["abi"] = MyJson.Parse(abi);
                 array.Add(new MyJson.JsonNode_ValueString(jsonmap.ToString()));
                 vs["params"] = array.ToString();
 
@@ -45,7 +47,7 @@ namespace client
             System.Net.WebClient wc = new MyWebClient();
             try
             {
-                var str = wc.DownloadString(api + "?rpccall=2.0&id=1&method=getcontractscript&params=[\"" + scripthash + "\"]");
+                var str = wc.DownloadString(api + "?jsonrpc=2.0&id=1&method=getcontractscript&params=[\"" + scripthash + "\"]");
                 var json = MyJson.Parse(str).AsDict()["result"].AsList()[0].AsDict();
                 if (json.ContainsKey("cs"))
                 {
@@ -67,12 +69,28 @@ namespace client
                     var outfile = System.IO.Path.Combine(savepath, scripthash + ".map.json");
                     System.IO.File.WriteAllText(outfile, mapResult);
                 }
+                if (json.ContainsKey("abi"))
+                {
+                    var mapResult = json["abi"].ToString();
+                    var outfile = System.IO.Path.Combine(savepath, scripthash + ".abi.json");
+                    System.IO.File.WriteAllText(outfile, mapResult);
+                }
                 return json;
             }
             catch (Exception err)
             {
                 return null;
             }
+        }
+
+        public static void downloadFullLog(string api, string path, string transid)
+        {
+            System.Net.WebClient wc = new MyWebClient();
+            var str = wc.DownloadString("https://apiaggr.nel.group/api/testnet" + "?jsonrpc=2.0&id=1&method=getfulllog&params=[\"" + transid + "\"]");
+            var json = MyJson.Parse(str).AsDict()["result"].AsList()[0].AsDict();
+            var fulllog = json["fulllog7z"].ToString();
+            var txid = json["txid"].ToString();
+            System.IO.File.WriteAllText(System.IO.Path.Combine(path, txid + ".llvmhex.txt"),fulllog);
         }
     }
 }

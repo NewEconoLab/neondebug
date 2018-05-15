@@ -46,12 +46,13 @@
                 <TextBox x:Name="textTid" Margin="1,4" TextWrapping="Wrap" Text="0xfc84ab554efb7b2e1e18eb5cdb63d2220bc10eac336ff6957af4775b2c8cb5ac" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="1"/>
                 <Button Content="Load(By TxID)" Margin="6,4" Click="Button_Click" Grid.Column="3" Grid.Row="3"/>
                 <ListBox x:Name="listLoadInfo" Margin="0,0,1,0" Grid.Row="5" Grid.ColumnSpan="4"/>
-                <Button Content="Load(File Dialog)" Margin="1" Click="Button_Click_3" Grid.Row="2" Grid.ColumnSpan="2" />
+                <Button Content="Load(File Dialog)" Margin="6,2,6,0" Click="Button_Click_3" Grid.Row="1" Grid.Column="3" />
                 <Label Content="合约文件位置 NeonDebug OutPath" Margin="1" Grid.ColumnSpan="2"/>
                 <Label Content=".fulllog file path" Margin="1,1,1,19" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
                 <TextBox x:Name="path_Contracts" Margin="1" TextWrapping="Wrap" Text="C:\Neo\SmartContracts\" Grid.Column="2"/>
                 <TextBox x:Name="path_fulllogs" Margin="1" TextWrapping="Wrap" Text="C:\Neo\FullLogs\" Grid.Row="1" Grid.Column="2"/>
-
+                <TextBox x:Name="server_api" Margin="0,0,1,0" Grid.Row="2" TextWrapping="Wrap" Text="https://apiaggr.nel.group/api/testnet" Grid.Column="2"/>
+                <Label Content="API" Margin="1,1,1,19" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="执行顺序 AVM Run Order" Margin="0" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="2">

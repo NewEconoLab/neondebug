@@ -137,6 +137,13 @@
 
         // Exceptions
         THROW = 0xF0,
-        THROWIFNOT = 0xF1
+        THROWIFNOT = 0xF1,
+
+        //Call
+        CALL_I = 0xE0,
+        CALL_E = 0xE1,
+        CALL_ED = 0xE2,
+        CALL_ET = 0xE3,
+        CALL_EDT = 0xE4,
     }
 }

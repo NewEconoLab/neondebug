@@ -64,10 +64,13 @@ namespace Neo.Compiler.MSIL
         ILogger logger;
         public NeoModule outModule;
         public Dictionary<ILMethod, NeoMethod> methodLink = new Dictionary<ILMethod, NeoMethod>();
-        public NeoModule Convert(ILModule _in)
+        ILModule inModule;
+        public NeoModule Convert(ILModule _in, ConvOption option = null)
         {
             //logger.Log("beginConvert.");
+            this.inModule = _in;
             this.outModule = new NeoModule(this.logger);
+            this.outModule.option = option == null ? ConvOption.Default : option;
             foreach (var t in _in.mapType)
             {
                 if (t.Key.Contains("<"))
@@ -120,16 +123,17 @@ namespace Neo.Compiler.MSIL
                 }
             }
 
-
-            foreach (var t in _in.mapType)
+            var keys = new List<string>(_in.mapType.Keys);
+            foreach (var key in keys)
             {
-                if (t.Key.Contains("<"))
+                var value = _in.mapType[key];
+                if (key.Contains("<"))
                     continue;//系统的，不要
-                if (t.Key.Contains("_API_")) continue;//api的，不要
-                if (t.Key.Contains(".My."))
+                if (key.Contains("_API_")) continue;//api的，不要
+                if (key.Contains(".My."))
                     continue;//vb system
 
-                foreach (var m in t.Value.methods)
+                foreach (var m in value.methods)
                 {
 
                     if (m.Value.method == null) continue;
@@ -273,14 +277,34 @@ namespace Neo.Compiler.MSIL
                 if (c.needfixfunc)
                 {//需要地址转换
                     var addrfunc = this.outModule.mapMethods[c.srcfunc].funcaddr;
-                    int wantaddr = addrfunc - c.addr;
-
-                    if (wantaddr < Int16.MinValue|| wantaddr > Int16.MaxValue)
+                    if (c.bytes.Length > 2)
                     {
-                        throw new Exception("addr jump is too far.");
+                        var len = c.bytes.Length - 2;
+                        int wantaddr = addrfunc - c.addr - len;
+                        if (wantaddr < Int16.MinValue || wantaddr > Int16.MaxValue)
+                        {
+                            throw new Exception("addr jump is too far.");
+                        }
+                        Int16 addrconv = (Int16)wantaddr;
+                        var bts = BitConverter.GetBytes(addrconv);
+                        c.bytes[c.bytes.Length - 2] = bts[0];
+                        c.bytes[c.bytes.Length - 1] = bts[1];
                     }
-                    Int16 addrconv = (Int16)wantaddr;
-                    c.bytes = BitConverter.GetBytes(addrconv);
+                    else if (c.bytes.Length == 2)
+                    {
+                        int wantaddr = addrfunc - c.addr;
+                        if (wantaddr < Int16.MinValue || wantaddr > Int16.MaxValue)
+                        {
+                            throw new Exception("addr jump is too far.");
+                        }
+                        Int16 addrconv = (Int16)wantaddr;
+                        c.bytes = BitConverter.GetBytes(addrconv);
+                    }
+                    else
+                    {
+                        throw new Exception("not have right fill bytes");
+                    }
+
                     c.needfixfunc = false;
                 }
             }
@@ -872,6 +896,11 @@ namespace Neo.Compiler.MSIL
                                 var intsrc = (int)_src;
                                 _ConvertPush(intsrc, src, to);
                             }
+                            else if (_src is long)
+                            {
+                                var intsrc = (long)_src;
+                                _ConvertPush(intsrc, src, to);
+                            }
                             else if (_src is Boolean)
                             {
                                 var bsrc = (Boolean)_src;
@@ -910,6 +939,10 @@ namespace Neo.Compiler.MSIL
                                     break;
                                 }
                             }
+                        }
+                        else
+                        {//如果走到这里，是一个静态成员，但是没有添加readonly 表示
+                            throw new Exception("Just allow defined a static variable with readonly." + d.FullName);
                         }
 
                     }

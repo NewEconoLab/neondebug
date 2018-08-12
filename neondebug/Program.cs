@@ -1,5 +1,6 @@
 ﻿using Neo.Compiler.MSIL;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -16,23 +17,57 @@ namespace Neo.Compiler
         //控制台输出约定了特别的语法
         public static void Main(string[] args)
         {
-            string outpath = "C:\\Neo\\SmartContracts";
 
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var log = new DefLogger();
-            log.Log("Neo.Compiler.MSIL(Debug) console app v" + Assembly.GetEntryAssembly().GetName().Version);
-            if (args.Length == 0)
+            log.Log("Neo.Compiler.MSIL console app v" + Assembly.GetEntryAssembly().GetName().Version);
+
+            bool bCompatible = false;
+            string filename = null;
+            for (var i = 0; i < args.Length; i++)
             {
-                log.Log("need one param for DLL filename.");
-                return;
+                if (args[i][0] == '-')
+                {
+                    if (args[i] == "--compatible")
+                    {
+                        bCompatible = true;
+                    }
+
+                    //other option
+                }
+                else
+                {
+                    filename = args[i];
+                }
             }
 
-            log.Log("Debug output path=" + outpath);
-
-            string filename = args[0];
+            if (filename == null)
+            {
+                log.Log("need one param for DLL filename.");
+                log.Log("[--compatible] disable nep8 function");
+                log.Log("Example:neon abc.dll --compatible");
+                return;
+            }
+            if (bCompatible)
+            {
+                log.Log("use --compatible no nep8");
+            }
             string onlyname = System.IO.Path.GetFileNameWithoutExtension(filename);
             string filepdb = onlyname + ".pdb";
+            var path = Path.GetDirectoryName(filename);
+            if (!string.IsNullOrEmpty(path))
+            {
+                try
+                {
+                    Directory.SetCurrentDirectory(path);
+                }
+                catch
+                {
+                    log.Log("Could not find path: " + path);
+                    Environment.Exit(-1);
+                }
+            }
 
             ILModule mod = new ILModule();
             System.IO.Stream fs = null;
@@ -68,23 +103,21 @@ namespace Neo.Compiler
             bool bSucc = false;
             string jsonstr = null;
             //convert and build
-            NeoModule neoM = null;
-            MyJson.JsonNode_Object abijson = null;
             try
             {
                 var conv = new ModuleConverter(log);
-
-                NeoModule am = conv.Convert(mod);
-                neoM = am;
+                ConvOption option = new ConvOption();
+                option.useNep8 = !bCompatible;
+                NeoModule am = conv.Convert(mod, option);
                 bytes = am.Build();
                 log.Log("convert succ");
 
 
                 try
                 {
-                    abijson = vmtool.FuncExport.Export(am, bytes);
+                    var outjson = vmtool.FuncExport.Export(am, bytes);
                     StringBuilder sb = new StringBuilder();
-                    abijson.ConvertToStringWithFormat(sb, 0);
+                    outjson.ConvertToStringWithFormat(sb, 0);
                     jsonstr = sb.ToString();
                     log.Log("gen abi succ");
                 }
@@ -115,7 +148,6 @@ namespace Neo.Compiler
                 log.Log("Write Bytes Error:" + err.ToString());
                 return;
             }
-            //write abi
             try
             {
 
@@ -141,9 +173,9 @@ namespace Neo.Compiler
             {
 
             }
+
             if (bSucc)
             {
-                _DebugOutput.DebugOutput(outpath,neoM, bytes, abijson);
                 log.Log("SUCC");
             }
         }

@@ -94,6 +94,9 @@ namespace Neo.Compiler.MSIL
                     case CodeEx.Ldc_I4_S:
                         calcStack.Push((int)src.tokenI32);
                         break;
+                    case CodeEx.Ldc_I8:
+                        calcStack.Push((long)src.tokenI64);
+                        break;
                     case CodeEx.Newarr:
                         {
                             if (src.tokenType == "System.Byte")
@@ -101,6 +104,10 @@ namespace Neo.Compiler.MSIL
                                 var count = (int)calcStack.Pop();
                                 byte[] data = new byte[count];
                                 calcStack.Push(data);
+                            }
+                            else
+                            {
+                                throw new Exception("only byte[] can be defined in here.");
                             }
                         }
                         break;
@@ -133,6 +140,31 @@ namespace Neo.Compiler.MSIL
                                     p2[i] = p1[i];
                                 }
                             }
+                                                        else if (m.DeclaringType.FullName == "System.Numerics.BigInteger" && m.Name == "op_Implicit")
+                            {
+                                var type = m.Parameters[0].ParameterType.FullName;
+                                if (type == "System.UInt64")
+                                {
+                                    var p = (ulong)(long)calcStack.Pop();
+                                    calcStack.Push(new System.Numerics.BigInteger(p).ToByteArray());
+                                }
+                                else if (type == "System.UInt32")
+                                {
+                                    var p = (ulong)(int)calcStack.Pop();
+                                    calcStack.Push(new System.Numerics.BigInteger(p).ToByteArray());
+                                }
+                                else if (type == "System.Int64")
+                                {
+                                    var p = (long)calcStack.Pop();
+                                    calcStack.Push(new System.Numerics.BigInteger(p).ToByteArray());
+                                }
+                                else
+                                {
+                                    var p =(int)calcStack.Pop();
+                                    calcStack.Push(new System.Numerics.BigInteger(p).ToByteArray());
+                                }
+                            }
+
                             else
                             {
                                 foreach (var attr in m.Resolve().CustomAttributes)
@@ -173,6 +205,14 @@ namespace Neo.Compiler.MSIL
                             var field = src.tokenUnknown as Mono.Cecil.FieldReference;
                             var fname = field.DeclaringType.FullName + "::" + field.Name;
                             to.staticfields[fname] = calcStack.Pop();
+                        }
+                        break;
+                    case CodeEx.Stelem_I1:
+                        {
+                            var v = (byte)(int)calcStack.Pop();
+                            var index = (int)calcStack.Pop();
+                            var array = calcStack.Pop() as byte[];
+                            array[index] = v;
                         }
                         break;
                 }

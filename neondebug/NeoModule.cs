@@ -30,6 +30,7 @@ namespace Neo.Compiler
             //并计算 this.codehash            byte[]
         }
         public string mainMethod;
+        public ConvOption option;
         public Dictionary<string, NeoMethod> mapMethods = new Dictionary<string, NeoMethod>();
         public Dictionary<string, NeoEvent> mapEvents = new Dictionary<string, NeoEvent>();
         //public Dictionary<string, byte[]> codes = new Dictionary<string, byte[]>();

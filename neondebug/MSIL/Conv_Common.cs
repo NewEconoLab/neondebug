@@ -165,7 +165,18 @@ namespace Neo.Compiler.MSIL
                 return 1;
 
             }
-            else
+            else if (code == CodeEx.Call)
+            {
+                var call = from.body_Codes[next];
+                if (call.tokenMethod == "System.Numerics.BigInteger System.Numerics.BigInteger::op_Implicit(System.UInt64)")
+                {//如果是ulong转型到biginteger，需要注意
+                    ulong v = (ulong)i;
+                    outv = v;
+                    _ConvertPush(outv.ToByteArray(), src, to);
+                    return 1;
+                }
+            }
+            //else
             {
                 _ConvertPush(i, src, to);
                 return 0;

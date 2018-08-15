@@ -23,13 +23,14 @@ namespace Neo.Compiler
             var log = new DefLogger();
             log.Log("Neo.Compiler.MSIL console app v" + Assembly.GetEntryAssembly().GetName().Version);
 
-            bool bCompatible = false;
+            bool bCompatible = true;
+            //bool bCompatible = false;
             string filename = null;
             for (var i = 0; i < args.Length; i++)
             {
                 if (args[i][0] == '-')
                 {
-                    if (args[i] == "--compatible")
+                    if (args[i] == "--uncompatible")
                     {
                         bCompatible = true;
                     }
@@ -44,6 +45,7 @@ namespace Neo.Compiler
 
             if (filename == null)
             {
+                log.Log("NEL Forked");
                 log.Log("need one param for DLL filename.");
                 log.Log("[--compatible] disable nep8 function");
                 log.Log("Example:neon abc.dll --compatible");

@@ -17,7 +17,7 @@ namespace Neo.Compiler
         //控制台输出约定了特别的语法
         public static void Main(string[] args)
         {
-
+            string outpath = "C:\\Neo\\SmartContracts";
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var log = new DefLogger();
@@ -104,6 +104,8 @@ namespace Neo.Compiler
             byte[] bytes = null;
             bool bSucc = false;
             string jsonstr = null;
+            NeoModule neoM = null;
+            MyJson.JsonNode_Object abijson = null;
             //convert and build
             try
             {
@@ -111,15 +113,16 @@ namespace Neo.Compiler
                 ConvOption option = new ConvOption();
                 option.useNep8 = !bCompatible;
                 NeoModule am = conv.Convert(mod, option);
+                neoM = am;
                 bytes = am.Build();
                 log.Log("convert succ");
 
 
                 try
                 {
-                    var outjson = vmtool.FuncExport.Export(am, bytes);
+                    abijson = vmtool.FuncExport.Export(am, bytes);
                     StringBuilder sb = new StringBuilder();
-                    outjson.ConvertToStringWithFormat(sb, 0);
+                    abijson.ConvertToStringWithFormat(sb, 0);
                     jsonstr = sb.ToString();
                     log.Log("gen abi succ");
                 }
@@ -178,6 +181,7 @@ namespace Neo.Compiler
 
             if (bSucc)
             {
+                _DebugOutput.DebugOutput(outpath, neoM, bytes, abijson);
                 log.Log("SUCC");
             }
         }

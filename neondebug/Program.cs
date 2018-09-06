@@ -21,7 +21,7 @@ namespace Neo.Compiler
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var log = new DefLogger();
-            log.Log("Neo.Compiler.MSIL console app v" + Assembly.GetEntryAssembly().GetName().Version);
+            log.Log("Neo.Compiler.MSIL<Debug> console app v" + Assembly.GetEntryAssembly().GetName().Version);
 
             bool bCompatible = true;
             //bool bCompatible = false;

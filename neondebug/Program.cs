@@ -32,7 +32,7 @@ namespace Neo.Compiler
                 {
                     if (args[i] == "--uncompatible")
                     {
-                        bCompatible = true;
+                        bCompatible = false;
                     }
 
                     //other option
@@ -47,13 +47,13 @@ namespace Neo.Compiler
             {
                 log.Log("NEL Forked");
                 log.Log("need one param for DLL filename.");
-                log.Log("[--compatible] disable nep8 function");
-                log.Log("Example:neon abc.dll --compatible");
+                log.Log("[--uncompatible] able nep8 function");
+                log.Log("Example:neon abc.dll --uncompatible");
                 return;
             }
             if (bCompatible)
             {
-                log.Log("use --compatible no nep8");
+                log.Log("use --uncompatible able nep8");
             }
             string onlyname = System.IO.Path.GetFileNameWithoutExtension(filename);
             string filepdb = onlyname + ".pdb";

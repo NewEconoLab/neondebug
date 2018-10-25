@@ -86,7 +86,7 @@ namespace client
         public static void downloadFullLog(string api, string path, string transid)
         {
             System.Net.WebClient wc = new MyWebClient();
-            var str = wc.DownloadString("https://apiaggr.nel.group/api/testnet" + "?jsonrpc=2.0&id=1&method=getfulllog&params=[\"" + transid + "\"]");
+            var str = wc.DownloadString(api + "?jsonrpc=2.0&id=1&method=getfulllog&params=[\"" + transid + "\"]");
             var json = MyJson.Parse(str).AsDict()["result"].AsList()[0].AsDict();
             var fulllog = json["fulllog7z"].ToString();
             var txid = json["txid"].ToString();

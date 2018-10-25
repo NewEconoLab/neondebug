@@ -19,14 +19,14 @@ namespace Neo.Compiler.MSIL
         public void LoadModule(System.IO.Stream dllStream, System.IO.Stream pdbStream)
         {
             this.module = Mono.Cecil.ModuleDefinition.ReadModule(dllStream);
-#if WITHPDB
+//#if WITHPDB
             if (pdbStream != null)
             {
                 var debugInfoLoader = new Mono.Cecil.Pdb.PdbReaderProvider();
 
                 module.ReadSymbols(debugInfoLoader.GetSymbolReader(module, pdbStream));
             }
-#endif
+//#endif
             if (module.HasAssemblyReferences)
             {
                 foreach (var ar in module.AssemblyReferences)
@@ -139,7 +139,7 @@ namespace Neo.Compiler.MSIL
                                     var _type = m.ReturnType.Resolve();
                                     foreach (var i in _type.Interfaces)
                                     {
-                                        if (i.Name == "IApiInterface")
+                                        if (i.InterfaceType.Name == "IApiInterface")
                                         {
                                             this.returntype = "IInteropInterface";
                                         }
@@ -164,7 +164,7 @@ namespace Neo.Compiler.MSIL
                                             var _type = rtype.Resolve();
                                             foreach (var i in _type.Interfaces)
                                             {
-                                                if (i.Name == "IApiInterface")
+                                                if (i.InterfaceType.Name == "IApiInterface")
                                                 {
                                                     paramtype = "IInteropInterface";
                                                 }
@@ -217,7 +217,7 @@ namespace Neo.Compiler.MSIL
                             var _type = p.ParameterType.Resolve();
                             foreach (var i in _type.Interfaces)
                             {
-                                if (i.Name == "IApiInterface")
+                                if (i.InterfaceType.Name == "IApiInterface")
                                 {
                                     paramtype = "IInteropInterface";
                                 }
@@ -237,7 +237,8 @@ namespace Neo.Compiler.MSIL
                     {
                         foreach (var v in bodyNative.Variables)
                         {
-                            this.body_Variables.Add(new NeoParam(v.Name, v.VariableType.FullName));
+                            var indexname = v.VariableType.Name + ":" + v.Index;
+                            this.body_Variables.Add(new NeoParam(indexname, v.VariableType.FullName));
                         }
                     }
                     for (int i = 0; i < bodyNative.Instructions.Count; i++)
@@ -246,10 +247,11 @@ namespace Neo.Compiler.MSIL
                         OpCode c = new OpCode();
                         c.code = (CodeEx)(int)code.OpCode.Code;
                         c.addr = code.Offset;
-                        if (code.SequencePoint != null)
+                        var sp = method.DebugInformation.GetSequencePoint(code);
+                        if (sp != null)
                         {
-                            c.debugcode = code.SequencePoint.Document.Url;
-                            c.debugline = code.SequencePoint.StartLine;
+                            c.debugcode = sp.Document.Url;
+                            c.debugline = sp.StartLine;
                         }
                         c.InitToken(code.Operand);
                         this.body_Codes.Add(c.addr, c);

@@ -195,6 +195,11 @@ namespace Neo.Compiler.MSIL
                                             var hex = HexString2Bytes(text);
                                             calcStack.Push(hex);
                                         }
+                                        else if (attrname == "ToBigInteger")
+                                        {
+                                            var n = System.Numerics.BigInteger.Parse(text);
+                                            calcStack.Push(n);
+                                        }
                                     }
                                 }
                             }

@@ -155,7 +155,7 @@ namespace Neo.Compiler.MSIL
                             var type = m.Value.method.ReturnType.Resolve();
                             foreach (var i in type.Interfaces)
                             {
-                                if (i.Name == "IApiInterface")
+                                if (i.InterfaceType.Name == "IApiInterface")
                                 {
                                     nm.returntype = "IInteropInterface";
                                 }
@@ -910,6 +910,11 @@ namespace Neo.Compiler.MSIL
                             {
                                 var bytesrc = System.Text.Encoding.UTF8.GetBytes((string)_src);
                                 _ConvertPush(bytesrc, src, to);
+                            }
+                            else if (_src is BigInteger)
+                            {
+                                byte[] bytes = ((BigInteger)_src).ToByteArray();
+                                _ConvertPush(bytes, src, to);
                             }
                             else
                             {

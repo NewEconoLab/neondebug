@@ -62,7 +62,6 @@
     </ApplicationDefinition>
     <Compile Include="Helper.cs" />
     <Compile Include="WebClient.cs">
-
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -125,7 +124,7 @@
       <Name>llvm</Name>
     </ProjectReference>
     <ProjectReference Include="..\thinSDK\thinSDK.csproj">
-      <Project>{25ac63a4-1908-448b-85d4-ed8af5509f68}</Project>
+      <Project>{5c06bfaf-6a70-4993-b865-5e21a04cf6c1}</Project>
       <Name>thinSDK</Name>
     </ProjectReference>
   </ItemGroup>

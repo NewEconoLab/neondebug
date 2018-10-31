@@ -66,7 +66,7 @@ namespace client
             //string pathLog = System.IO.Path.Combine(rootPath, "tempLog");
 
             string pathScript = path_Contracts.Text;// System.IO.Path.Combine(rootPath, "tempScript");
-            string pathLog = path_fulllogs.Text;
+            string pathLog = path_dumpInfos.Text;
             string api = server_api.Text;
             if (System.IO.Directory.Exists(pathScript) == false)
                 System.IO.Directory.CreateDirectory(pathScript);
@@ -101,7 +101,7 @@ namespace client
                 }
                 this.listLoadInfo.Items.Add("load finish");
                 List<string> scriptnames = new List<string>();
-                debugtool.fullLog.script.GetAllScriptName(scriptnames);
+                debugtool.dumpInfo.script.GetAllScriptName(scriptnames);
                 foreach (var s in scriptnames)
                 {
                     //把本地要解析但没有的script从服务器down下来
@@ -134,17 +134,17 @@ namespace client
         {
             treeCode.Items.Clear();
             TreeViewItem item = new TreeViewItem();
-            item.Header = "Execute Order:" + debugtool.fullLog.state.ToString();
+            item.Header = "Execute Order:" + debugtool.dumpInfo.state.ToString();
             treeCode.Items.Add(item);
-            if (string.IsNullOrEmpty(debugtool.fullLog.error) == false)
+            if (string.IsNullOrEmpty(debugtool.dumpInfo.error) == false)
             {
                 TreeViewItem erritem = new TreeViewItem();
-                erritem.Header = "error:" + debugtool.fullLog.error;
+                erritem.Header = "error:" + debugtool.dumpInfo.error;
                 treeCode.Items.Add(erritem);
             }
             {
                 TreeViewItem resultitem = new TreeViewItem();
-                resultitem.Header = "result:" + debugtool.fullLog.state.ToString();
+                resultitem.Header = "result:" + debugtool.dumpInfo.state.ToString();
                 treeCode.Items.Add(resultitem);
             }
             TreeViewItem itemScript = new TreeViewItem();
@@ -419,7 +419,7 @@ namespace client
             var wc = new MyWebClient();
 
             //string rootPath = System.IO.Path.GetDirectoryName(this.GetType().Assembly.Location);
-            string pathLog = path_fulllogs.Text;
+            string pathLog = path_dumpInfos.Text;
             if (System.IO.Directory.Exists(pathLog) == false)
                 System.IO.Directory.CreateDirectory(pathLog);
 

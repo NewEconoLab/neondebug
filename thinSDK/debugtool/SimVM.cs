@@ -208,7 +208,7 @@ namespace ThinNeo.Debug
     //模拟虚拟机
     public class SimVM
     {
-        public void Execute(SmartContract.Debug.FullLog FullLog)
+        public void Execute(SmartContract.Debug.DumpInfo DumpInfo)
         {
             State runstate = new State();
             runstate.SetId(0);
@@ -217,10 +217,10 @@ namespace ThinNeo.Debug
             mapState = new Dictionary<SmartContract.Debug.LogOp, int>();
             careinfo = new List<CareItem>();
 
-            regenScript = new SmartContract.Debug.LogScript(FullLog.script.hash);
+            regenScript = new SmartContract.Debug.LogScript(DumpInfo.script.hash);
             lastScript = regenScript;
 
-            ExecuteScript(runstate, FullLog.script);
+            ExecuteScript(runstate, DumpInfo.script);
         }
         SmartContract.Debug.LogScript lastScript = null;
         public SmartContract.Debug.LogScript regenScript;

@@ -92,5 +92,6 @@ namespace client
             var txid = json["txid"].ToString();
             System.IO.File.WriteAllText(System.IO.Path.Combine(path, txid + ".llvmhex.txt"),fulllog);
         }
+        
     }
 }

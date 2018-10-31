@@ -247,6 +247,7 @@ namespace Neo.Compiler.MSIL
                         OpCode c = new OpCode();
                         c.code = (CodeEx)(int)code.OpCode.Code;
                         c.addr = code.Offset;
+
                         var sp = method.DebugInformation.GetSequencePoint(code);
                         if (sp != null)
                         {

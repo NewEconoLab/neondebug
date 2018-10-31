@@ -63,12 +63,12 @@ namespace Neo.Compiler.MSIL
 
         ILogger logger;
         public NeoModule outModule;
-        public Dictionary<ILMethod, NeoMethod> methodLink = new Dictionary<ILMethod, NeoMethod>();
         ILModule inModule;
+        public Dictionary<ILMethod, NeoMethod> methodLink = new Dictionary<ILMethod, NeoMethod>();
         public NeoModule Convert(ILModule _in, ConvOption option = null)
         {
-            //logger.Log("beginConvert.");
             this.inModule = _in;
+            //logger.Log("beginConvert.");
             this.outModule = new NeoModule(this.logger);
             this.outModule.option = option == null ? ConvOption.Default : option;
             foreach (var t in _in.mapType)
@@ -277,15 +277,18 @@ namespace Neo.Compiler.MSIL
                 if (c.needfixfunc)
                 {//需要地址转换
                     var addrfunc = this.outModule.mapMethods[c.srcfunc].funcaddr;
+
                     if (c.bytes.Length > 2)
                     {
                         var len = c.bytes.Length - 2;
                         int wantaddr = addrfunc - c.addr - len;
+
                         if (wantaddr < Int16.MinValue || wantaddr > Int16.MaxValue)
                         {
                             throw new Exception("addr jump is too far.");
                         }
                         Int16 addrconv = (Int16)wantaddr;
+
                         var bts = BitConverter.GetBytes(addrconv);
                         c.bytes[c.bytes.Length - 2] = bts[0];
                         c.bytes[c.bytes.Length - 1] = bts[1];
@@ -293,6 +296,7 @@ namespace Neo.Compiler.MSIL
                     else if (c.bytes.Length == 2)
                     {
                         int wantaddr = addrfunc - c.addr;
+
                         if (wantaddr < Int16.MinValue || wantaddr > Int16.MaxValue)
                         {
                             throw new Exception("addr jump is too far.");
@@ -304,7 +308,6 @@ namespace Neo.Compiler.MSIL
                     {
                         throw new Exception("not have right fill bytes");
                     }
-
                     c.needfixfunc = false;
                 }
             }
@@ -900,6 +903,7 @@ namespace Neo.Compiler.MSIL
                             {
                                 var intsrc = (long)_src;
                                 _ConvertPush(intsrc, src, to);
+
                             }
                             else if (_src is Boolean)
                             {
@@ -915,6 +919,7 @@ namespace Neo.Compiler.MSIL
                             {
                                 byte[] bytes = ((BigInteger)_src).ToByteArray();
                                 _ConvertPush(bytes, src, to);
+
                             }
                             else
                             {
@@ -947,9 +952,8 @@ namespace Neo.Compiler.MSIL
                         }
                         else
                         {//如果走到这里，是一个静态成员，但是没有添加readonly 表示
-                            throw new Exception("Just allow defined a static variable with readonly." + d.FullName);
+                            throw new Exception("Just allow defined a static variable with readonly."+d.FullName);
                         }
-
                     }
                     break;
                 case CodeEx.Throw:

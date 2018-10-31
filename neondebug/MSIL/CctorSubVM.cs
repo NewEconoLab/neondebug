@@ -140,7 +140,7 @@ namespace Neo.Compiler.MSIL
                                     p2[i] = p1[i];
                                 }
                             }
-                                                        else if (m.DeclaringType.FullName == "System.Numerics.BigInteger" && m.Name == "op_Implicit")
+                            else if (m.DeclaringType.FullName == "System.Numerics.BigInteger" && m.Name == "op_Implicit")
                             {
                                 var type = m.Parameters[0].ParameterType.FullName;
                                 if (type == "System.UInt64")
@@ -164,7 +164,6 @@ namespace Neo.Compiler.MSIL
                                     calcStack.Push(new System.Numerics.BigInteger(p).ToByteArray());
                                 }
                             }
-
                             else
                             {
                                 foreach (var attr in m.Resolve().CustomAttributes)
@@ -175,9 +174,9 @@ namespace Neo.Compiler.MSIL
                                         var value = (int)attr.ConstructorArguments[0].Value;
                                         var type = attr.ConstructorArguments[0].Type.Resolve();
                                         string attrname = "";
-                                        foreach(var f in type.Fields)
+                                        foreach (var f in type.Fields)
                                         {
-                                            if(f.Constant!=null&& (int)f.Constant== value)
+                                            if (f.Constant != null && (int)f.Constant == value)
                                             {
                                                 attrname = f.Name;
                                                 break;
@@ -195,7 +194,7 @@ namespace Neo.Compiler.MSIL
                                             var hex = HexString2Bytes(text);
                                             calcStack.Push(hex);
                                         }
-                                        else if (attrname == "ToBigInteger")
+                                        else if(attrname=="ToBigInteger")
                                         {
                                             var n = System.Numerics.BigInteger.Parse(text);
                                             calcStack.Push(n);
@@ -214,8 +213,8 @@ namespace Neo.Compiler.MSIL
                         break;
                     case CodeEx.Stelem_I1:
                         {
-                            var v = (byte)(int)calcStack.Pop();
-                            var index = (int)calcStack.Pop();
+                            var v =(byte)(int)calcStack.Pop();
+                            var index =(int)calcStack.Pop();
                             var array = calcStack.Pop() as byte[];
                             array[index] = v;
                         }

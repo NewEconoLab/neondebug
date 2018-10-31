@@ -741,9 +741,11 @@ namespace Neo.Compiler.MSIL
                 {
                     byte _pcount = (byte)defs.Parameters.Count;
                     byte _rvcount = (byte)(defs.ReturnType.FullName == "System.Void" ? 0 : 1);
+
                     var c = _Convert1by1(VM.OpCode.CALL_I, null, to, new byte[] { _rvcount, _pcount, 0, 0 });
                     c.needfixfunc = true;
                     c.srcfunc = src.tokenMethod;
+
                 }
                 else
                 {
@@ -775,6 +777,8 @@ namespace Neo.Compiler.MSIL
                 {
                     byte _pcount = (byte)defs.Parameters.Count;
                     byte _rvcount = (byte)(defs.ReturnType.FullName == "System.Void" ? 0 : 1);
+
+
                     if (callhash.All(v => v == 0))//empty nep4
                     {
                         throw new Exception("nep4 calltype==6");
@@ -783,7 +787,9 @@ namespace Neo.Compiler.MSIL
                     {
                         var bytes = new byte[] { _rvcount, _pcount }.Concat(callhash).ToArray();
                         _Convert1by1(VM.OpCode.CALL_E, null, to, bytes);
+
                     }
+
                 }
                 else
                 {
@@ -816,6 +822,7 @@ namespace Neo.Compiler.MSIL
             {
                 _ConvertPush(callpcount, src, to);
                 _Convert1by1(VM.OpCode.ROLL, null, to);
+
                 //dyn appcall
                 if (this.outModule.option.useNep8)
                 {
@@ -852,6 +859,7 @@ namespace Neo.Compiler.MSIL
                 type = new ILType(null, method.DeclaringType);
                 inModule.mapType[typename] = type;
             }
+
             var _method = type.methods[method.FullName];
             try
             {
@@ -882,12 +890,14 @@ namespace Neo.Compiler.MSIL
                 nm.isPublic = method.IsPublic;
                 this.methodLink[_method] = nm;
                 outModule.mapMethods[nm.name] = nm;
+
                 ConvertMethod(_method, nm);
                 return true;
             }
             catch
             {
                 return false;
+
             }
             finally
             {
@@ -895,11 +905,10 @@ namespace Neo.Compiler.MSIL
                 this.addrconv.Clear();
                 foreach (int k in oldaddrconv.Keys)
                 {
-                    addrconv[k] = oldaddrconv[k];
+                    addrconv[k]=oldaddrconv[k];
                 }
             }
         }
-
         private int _ConvertNewArr(ILMethod method, OpCode src, NeoMethod to)
         {
             var type = src.tokenType;

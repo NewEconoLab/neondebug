@@ -44,14 +44,14 @@
                 </Grid.RowDefinitions>
                 <TextBlock TextWrapping="Wrap" Text="TXID" Margin="1" Grid.Row="3"/>
                 <TextBox x:Name="textTid" Margin="1,4" TextWrapping="Wrap" Text="0xfc84ab554efb7b2e1e18eb5cdb63d2220bc10eac336ff6957af4775b2c8cb5ac" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="1"/>
-                <Button Content="Load(By TxID)" Margin="6,4" Click="Button_Click" Grid.Column="3" Grid.Row="3"/>
+                <Button Content="Load(By TxID)" Margin="6.4,4,6.4,0" Click="Button_Click" Grid.Column="3" Grid.Row="3" Height="21" VerticalAlignment="Top"/>
                 <ListBox x:Name="listLoadInfo" Margin="0,0,1,0" Grid.Row="5" Grid.ColumnSpan="4"/>
                 <Button Content="Load(File Dialog)" Margin="0,1.8,6.4,0" Click="Button_Click_3" Grid.Row="1" Grid.Column="3" Height="23" VerticalAlignment="Top" HorizontalAlignment="Right" Width="124" />
                 <Label Content="合约文件位置 NeonDebug OutPath" Margin="1" Grid.ColumnSpan="2"/>
                 <Label Content=".dumpInfo file path" Margin="1,1,1,19" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
-                <TextBox x:Name="path_Contracts" Margin="1" TextWrapping="Wrap" Text="C:\Neo\SmartContracts\" Grid.Column="2" RenderTransformOrigin="0.501,0.507"/>
-                <TextBox x:Name="path_dumpInfos" Margin="1" TextWrapping="Wrap" Text="C:\Neo\DumpInfos\" Grid.Row="1" Grid.Column="2"/>
-                <TextBox x:Name="server_api" Margin="0,0,1,0" Grid.Row="2" TextWrapping="Wrap" Text="https://apiaggr.nel.group/api/testnet" Grid.Column="2"/>
+                <TextBox x:Name="path_Contracts" Margin="1" TextWrapping="Wrap" Text="C:\NeoCli\SmartContracts\" Grid.Column="2" RenderTransformOrigin="0.501,0.507"/>
+                <TextBox x:Name="path_dumpInfos" Margin="1" TextWrapping="Wrap" Text="C:\NeoCli\dumpInfos\" Grid.Row="1" Grid.Column="2"/>
+                <TextBox x:Name="server_api" Margin="0,0,1,0" Grid.Row="2" TextWrapping="Wrap" Text="http://121.43.170.160:1189/api/testnet" Grid.Column="2"/>
                 <Label Content="API" Margin="1,1,1,19" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
             </Grid>
         </GroupBox>

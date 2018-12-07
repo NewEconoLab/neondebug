@@ -40,13 +40,10 @@ namespace client
             var transid = this.textTid.Text;
             byte[] info = ThinNeo.Helper.HexString2Bytes(transid.ToLower());
             transid = "0x" + ThinNeo.Helper.Bytes2HexString(info);
-            if (transid != "0x00")
-            {
-                
-            }
-            //{//download and write debugfile
+            //if (transid != "0x00")
+            //{
             //    var filename = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
-            //    var url = textAPITran.Text + "?jsonrpc=2.0&id=1&method=getfulllog&params=[%22" + transid + "%22]";
+            //    var url = server_api.Text + "?jsonrpc=2.0&id=1&method=getDumpInfoByTxid&params=[\"" + transid + "\"]";
             //    var rtnstr = wc.DownloadString(url);
             //    var json = MyJson.Parse(rtnstr).AsDict();
             //    if (json.ContainsKey("result") == false)
@@ -54,7 +51,7 @@ namespace client
             //        MessageBox.Show("找不到此交易的智能合约log。Can not find fullloginfo for this transaction.");
             //        return;
             //    }
-            //    var txt = json["result"].AsList()[0].AsDict()["fulllog7z"].AsString();
+            //    var txt = json["result"].AsList()[0].AsDict()["dimpInfo"].AsString();
             //    System.IO.File.WriteAllText(filename, txt);
             //}
             LoadTxLog(transid);
@@ -76,19 +73,21 @@ namespace client
             try
             {
                 //服务器暂时没开启fulllog
-                //try
-                //{
-                //    //把本地要解析但没有的fulllog从服务器down下来
-                //    var tranfile = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
-                //    if (System.IO.File.Exists(tranfile) == false)
-                //    {
-                //        ApiHelper.downloadFullLog(api, pathLog, transid);
-                //    }
-                //}
-                //catch (Exception e)
-                //{
-                //    this.listLoadInfo.Items.Add(e.Message);
-                //}
+                try
+                {
+                    //把本地要解析但没有的fulllog从服务器down下来
+                    var tranfile = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
+                    if (System.IO.File.Exists(tranfile) == false)
+                    {
+                        ApiHelper.downloadFullLog(api, pathLog, transid);
+                    }
+                }
+                catch (Exception e)
+                {
+                    this.listLoadInfo.Items.Add(e.Message);
+                }
+
+
 
                 try
                 {

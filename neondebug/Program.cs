@@ -17,7 +17,7 @@ namespace Neo.Compiler
         //控制台输出约定了特别的语法
         public static void Main(string[] args)
         {
-            string outpath = "C:\\Neo\\SmartContracts";
+            string outpath = "C:\\NeoCli\\SmartContracts";
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var log = new DefLogger();

@@ -51,7 +51,7 @@
                 <Label Content=".dumpInfo file path" Margin="1,1,1,19" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
                 <TextBox x:Name="path_Contracts" Margin="1" TextWrapping="Wrap" Text="C:\NeoCli\SmartContracts\" Grid.Column="2" RenderTransformOrigin="0.501,0.507"/>
                 <TextBox x:Name="path_dumpInfos" Margin="1" TextWrapping="Wrap" Text="C:\NeoCli\dumpInfos\" Grid.Row="1" Grid.Column="2"/>
-                <TextBox x:Name="server_api" Margin="0,0,1,0" Grid.Row="2" TextWrapping="Wrap" Text="http://121.43.170.160:1189/api/testnet" Grid.Column="2"/>
+                <TextBox x:Name="server_api" Margin="0,0,1,0" Grid.Row="2" TextWrapping="Wrap" Text="https://apiaggr.nel.group/api/testnet" Grid.Column="2"/>
                 <Label Content="API" Margin="1,1,1,19" Grid.Row="2" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
             </Grid>
         </GroupBox>

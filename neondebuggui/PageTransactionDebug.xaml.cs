@@ -79,7 +79,7 @@ namespace client
                     var tranfile = System.IO.Path.Combine(pathLog, transid + ".llvmhex.txt");
                     if (System.IO.File.Exists(tranfile) == false)
                     {
-                        ApiHelper.downloadFullLog(api, pathLog, transid);
+                        ApiHelper.downloadFullLog("http://121.43.170.160:1189/api/testnet", pathLog, transid);
                     }
                 }
                 catch (Exception e)

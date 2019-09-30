@@ -99,7 +99,7 @@ namespace Neo.Compiler.MSIL
                         break;
                     case CodeEx.Newarr:
                         {
-                            if (src.tokenType == "System.Byte")
+                            if ((src.tokenType == "System.Byte") || (src.tokenType == "System.SByte"))
                             {
                                 var count = (int)calcStack.Pop();
                                 byte[] data = new byte[count];

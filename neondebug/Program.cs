@@ -71,7 +71,7 @@ namespace Neo.Compiler
                 }
             }
 
-            ILModule mod = new ILModule();
+            ILModule mod = new ILModule(log);
             System.IO.Stream fs = null;
             System.IO.Stream fspdb = null;
 
@@ -112,6 +112,7 @@ namespace Neo.Compiler
                 var conv = new ModuleConverter(log);
                 ConvOption option = new ConvOption();
                 option.useNep8 = !bCompatible;
+                option.useSysCallInteropHash = !bCompatible;
                 NeoModule am = conv.Convert(mod, option);
                 neoM = am;
                 bytes = am.Build();

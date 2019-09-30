@@ -12,9 +12,10 @@ namespace Neo.Compiler.MSIL
         public Mono.Cecil.ModuleDefinition module = null;
         public List<string> moduleref = new List<string>();
         public Dictionary<string, ILType> mapType = new Dictionary<string, ILType>();
-        public ILModule()
+        public ILogger logger;
+        public ILModule(ILogger _logger = null)
         {
-
+            this.logger = _logger;
         }
         public void LoadModule(System.IO.Stream dllStream, System.IO.Stream pdbStream)
         {
@@ -45,13 +46,12 @@ namespace Neo.Compiler.MSIL
                     if (t.FullName.Contains(".My."))//vb 系统类不要
                         continue;
 
-                    mapType[t.FullName] = new ILType(this, t);
+                    mapType[t.FullName] = new ILType(this, t, logger);
                     if (t.HasNestedTypes)
                     {
                         foreach (var nt in t.NestedTypes)
                         {
-                            mapType[nt.FullName] = new ILType(this, nt);
-
+                            mapType[nt.FullName] = new ILType(this, nt, logger);
                         }
                     }
 
@@ -65,7 +65,7 @@ namespace Neo.Compiler.MSIL
         Mono.Cecil.TypeDefinition type;
         public Dictionary<string, ILField> fields = new Dictionary<string, ILField>();
         public Dictionary<string, ILMethod> methods = new Dictionary<string, ILMethod>();
-        public ILType(ILModule module, Mono.Cecil.TypeDefinition type)
+        public ILType(ILModule module, Mono.Cecil.TypeDefinition type, ILogger logger)
         {
             this.type = type;
             foreach (Mono.Cecil.FieldDefinition f in type.Fields)
@@ -76,13 +76,13 @@ namespace Neo.Compiler.MSIL
             {
                 if (m.IsStatic == false)
                 {
-                    var method = new ILMethod(this, null);
+                    var method = new ILMethod(this, null, logger);
                     method.fail = "只能导出static 函数";
                     methods[m.FullName] = method;
                 }
                 else
                 {
-                    var method = new ILMethod(this, m);
+                    var method = new ILMethod(this, m, logger);
                     if (methods.ContainsKey(m.FullName))
                     {
                         throw new Exception("already have a func named:" + type.FullName + "::" + m.Name);
@@ -200,7 +200,7 @@ namespace Neo.Compiler.MSIL
 
     public class ILMethod
     {
-        public ILMethod(ILType type, Mono.Cecil.MethodDefinition method)
+        public ILMethod(ILType type, Mono.Cecil.MethodDefinition method, ILogger logger = null)
         {
             this.method = method;
             if (method != null)
@@ -254,6 +254,7 @@ namespace Neo.Compiler.MSIL
                             c.debugcode = sp.Document.Url;
                             c.debugline = sp.StartLine;
                         }
+                        //Console.WriteLine("code:" + code + "        opcode:" + c.code + "        debugline:" + c.debugline);
                         c.InitToken(code.Operand);
                         this.body_Codes.Add(c.addr, c);
                     }

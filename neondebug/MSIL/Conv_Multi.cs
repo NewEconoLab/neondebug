@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
+using System.Security.Cryptography;
 
 namespace Neo.Compiler.MSIL
 {
@@ -14,9 +16,10 @@ namespace Neo.Compiler.MSIL
         {
 
             //get array
-            _Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
-            _Convert1by1(VM.OpCode.DUP, null, to);
-            _Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            //_Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
+            //_Convert1by1(VM.OpCode.DUP, null, to);
+            //_Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            _Convert1by1(VM.OpCode.DUPFROMALTSTACK, src, to);
             //get i
             _ConvertPush(pos + method.paramtypes.Count, null, to);//翻转取参数顺序
 
@@ -60,9 +63,10 @@ namespace Neo.Compiler.MSIL
         private void _ConvertLdLoc(ILMethod method, OpCode src, NeoMethod to, int pos)
         {
             //get array
-            _Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
-            _Convert1by1(VM.OpCode.DUP, null, to);
-            _Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            //_Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
+            //_Convert1by1(VM.OpCode.DUP, null, to);
+            //_Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            _Convert1by1(VM.OpCode.DUPFROMALTSTACK, src, to);
             //get i
             _ConvertPush(pos + method.paramtypes.Count, null, to);//翻转取参数顺序
             _Convert1by1(VM.OpCode.PICKITEM, null, to);
@@ -137,9 +141,10 @@ namespace Neo.Compiler.MSIL
             }
             //}
             //get array
-            _Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
-            _Convert1by1(VM.OpCode.DUP, null, to);
-            _Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            //_Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
+            //_Convert1by1(VM.OpCode.DUP, null, to);
+            //_Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            _Convert1by1(VM.OpCode.DUPFROMALTSTACK, src, to);
             //get i
             _ConvertPush(pos, null, to);//翻转取参数顺序
             _Convert1by1(VM.OpCode.PICKITEM, null, to);
@@ -180,35 +185,36 @@ namespace Neo.Compiler.MSIL
 
             _Convert1by1(VM.OpCode.SETITEM, null, to);
         }
-        public bool IsSysCall(Mono.Cecil.MethodDefinition defs, out string name)
-        {
-            if (defs == null)
-            {
-                name = "";
-                return false;
-            }
-            foreach (var attr in defs.CustomAttributes)
-            {
-                if (attr.AttributeType.Name == "SyscallAttribute")
+
+        /*
+                public bool IsSysCall(Mono.Cecil.MethodDefinition defs, out string name)
                 {
-                    var type = attr.ConstructorArguments[0].Type;
-                    var value = (string)attr.ConstructorArguments[0].Value;
+                    if (defs == null)
+                    {
+                        name = "";
+                        return false;
+                    }
+                    foreach (var attr in defs.CustomAttributes)
+                    {
+                        if (attr.AttributeType.Name == "SyscallAttribute")
+                        {
+                            var type = attr.ConstructorArguments[0].Type;
+                            var value = (string)attr.ConstructorArguments[0].Value;
 
-                    //dosth
-                    name = value;
-                    return true;
-
+                            //dosth
+                            name = value;
+                            return true;
+                        }
+                        //if(attr.t)
+                    }
+                    name = "";
+                    return false;
 
 
                 }
-                //if(attr.t)
-            }
-            name = "";
-            return false;
+        */
 
-
-        }
-        public bool IsAppCall(Mono.Cecil.MethodDefinition defs, out byte[] hash)
+    public bool IsAppCall(Mono.Cecil.MethodDefinition defs, out byte[] hash)
         {
             if (defs == null)
             {
@@ -288,48 +294,132 @@ namespace Neo.Compiler.MSIL
                 {
                     throw new Exception("NonemitWithConvert func only used for readonly static field.");
                 }
+                if (attr.AttributeType.Name == "ScriptAttribute")
+                {
+                    var strv = attr.ConstructorArguments[0].Value as string;
+                    if (string.IsNullOrEmpty(strv))
+                    {
+                        return true;
+                    }
+
+                }
                 //if(attr.t)
             }
             return false;
         }
-        public bool IsOpCall(Mono.Cecil.MethodDefinition defs, out string name)
+
+        public bool IsMixAttribute(Mono.Cecil.MethodDefinition defs, out VM.OpCode[] opcodes, out string[] opdata)
         {
+            // ============================================
+            // Integrates attributes: OpCode/Syscall/Script
+            // ============================================
+
+            opcodes = null;
+            opdata = null;
+
             if (defs == null)
             {
-                name = "";
                 return false;
             }
+
+            int count_attrs = 0;
+
+            foreach (var attr in defs.CustomAttributes)
+            {
+                if ((attr.AttributeType.Name == "OpCodeAttribute") ||
+                    (attr.AttributeType.Name == "SyscallAttribute") ||
+                    (attr.AttributeType.Name == "ScriptAttribute"))
+                    count_attrs++;
+            }
+
+            if (count_attrs == 0)
+            {
+                // no OpCode/Syscall/Script Attribute
+                return false;
+            }
+
+            opcodes = new VM.OpCode[count_attrs];
+            opdata = new string[count_attrs];
+
+            int i = 0; // index each attribute
+            int ext = 0; // extension attributes (automatically included if using 'this' on parameter)
 
             foreach (var attr in defs.CustomAttributes)
             {
                 if (attr.AttributeType.Name == "OpCodeAttribute")
                 {
+                    opcodes[i] = (VM.OpCode)attr.ConstructorArguments[0].Value;
+                    opdata[i] = (string)attr.ConstructorArguments[1].Value;
+
+                    i++;
+                }
+                else if (attr.AttributeType.Name == "SyscallAttribute")
+                {
+                    //var type = attr.ConstructorArguments[0].Type;
+                    var val = (string)attr.ConstructorArguments[0].Value;
+
+                    opcodes[i] = VM.OpCode.SYSCALL;
+                    opdata[i] = val;
+
+                    i++;
+                }
+                else if (attr.AttributeType.Name == "ScriptAttribute")
+                {
+                    //var type = attr.ConstructorArguments[0].Type;
+                    var val = (string)attr.ConstructorArguments[0].Value;
+
+                    opcodes[i] = VM.OpCode.NOP;
+                    opdata[i] = val;
+
+                    i++;
+                }
+
+                if (attr.AttributeType.Name == "ExtensionAttribute")
+                    ext++;
+            }
+
+            if ((count_attrs + ext) == defs.CustomAttributes.Count)
+            {
+                // all attributes are OpCode or Syscall or Script (plus ExtensionAttribute which is automatic)
+                return true;
+            }
+            else
+            {
+                opcodes = null;
+                opdata = null;
+
+                // OpCodeAttribute/SyscallAttribute together with different attributes, cannot mix!
+                throw new Exception("neomachine Cannot mix OpCode/Syscall/Script attributes with others!");
+            }
+        }
+
+        /*
+        public bool IsOpCall(Mono.Cecil.MethodDefinition defs, out VM.OpCode[] opcodes)
+        {
+            opcodes = null;
+            if (defs == null)
+            {
+                return false;
+            }
+            foreach (var attr in defs.CustomAttributes)
+            {
+                if (attr.AttributeType.Name == "OpCodeAttribute")
+                {
                     var type = attr.ConstructorArguments[0].Type;
-                    var value = (byte)attr.ConstructorArguments[0].Value;
-
-                    foreach (var t in type.Resolve().Fields)
+                    Mono.Cecil.CustomAttributeArgument[] val = (Mono.Cecil.CustomAttributeArgument[])attr.ConstructorArguments[0].Value;
+                    opcodes = new VM.OpCode[val.Length];
+                    for (var j = 0; j < val.Length; j++)
                     {
-                        if (t.Constant != null)
-                        {
-                            if ((byte)t.Constant == value)
-                            {
-
-                                //dosth
-                                name = t.Name;
-                                return true;
-
-                            }
-                        }
+                        opcodes[j] = ((VM.OpCode)(byte)val[j].Value);
                     }
-
-
+                    return true;
                 }
                 //if(attr.t)
             }
-            name = "";
             return false;
-
         }
+*/
+
         public bool IsNotifyCall(Mono.Cecil.MethodDefinition defs, Mono.Cecil.MethodReference refs, NeoMethod to, out string name)
         {
 
@@ -381,7 +471,9 @@ namespace Neo.Compiler.MSIL
             string callname = "";
             int callpcount = 0;
             byte[] callhash = null;
-            VM.OpCode callcode = VM.OpCode.NOP;
+            //VM.OpCode callcode = VM.OpCode.NOP;
+            VM.OpCode[] callcodes = null;
+            string[] calldata = null;
 
             Mono.Cecil.MethodDefinition defs = null;
             try
@@ -407,20 +499,37 @@ namespace Neo.Compiler.MSIL
                 calltype = 6;
                 to.lastparam = -1;
             }
-            else if (IsOpCall(defs, out callname))
+            //else if (IsOpCall(defs, out callcodes))
+            //{
+            //    calltype = 2;
+
+            //if (System.Enum.TryParse<VM.OpCode>(callname, out callcode))
+            //{
+            //    calltype = 2;
+            //}
+            //else
+            //{
+            //    throw new Exception("Can not find OpCall:" + callname);
+            //}
+            //}
+            //else if (IsOpCodesCall(defs, out callcodes))
+            //{
+            //    calltype = 7;
+            //}
+            //else if (IsSysCall(defs, out callname))
+            //{
+            //    calltype = 3;
+            //}
+            else if (IsMixAttribute(defs, out callcodes, out calldata))
             {
-                if (System.Enum.TryParse<VM.OpCode>(callname, out callcode))
+                //单一syscall 参数要翻转
+                //单一opcall 不管参数
+                calltype = 7;
+
+                if (callcodes.Length == 1 && callcodes[0] != VM.OpCode.SYSCALL)
                 {
                     calltype = 2;
                 }
-                else
-                {
-                    throw new Exception("Can not find OpCall:" + callname);
-                }
-            }
-            else if (IsSysCall(defs, out callname))
-            {
-                calltype = 3;
             }
             else if (IsAppCall(defs, out callhash))
             {
@@ -690,14 +799,24 @@ namespace Neo.Compiler.MSIL
             bool havethis = md.HasThis;
             if (calltype == 2)
             {
-                //opcode call 
+                //opcode call
             }
             else
             {//翻转参数顺序
 
+                //this become very diffcult
+
+                // because opcode donot need to flip params
+                // but syscall need
+                // calltype7 is  opcode? or is syscall?
+
+                // i will make calltype7 =calltype3 , you can add flip opcode if you need.
                 //如果是syscall 并且有this的，翻转范围加一
-                if (calltype == 3 && havethis)
+                if (havethis && calltype == 7)
                     pcount++;
+                //if ((calltype == 3) || ((calltype == 7) && (callcodes[0] == VM.OpCode.SYSCALL)))
+                //    pcount++;
+                // calltype == 3 does not exist anymore
 
                 _Convert1by1(VM.OpCode.NOP, src, to);
                 if (pcount <= 1)
@@ -755,20 +874,68 @@ namespace Neo.Compiler.MSIL
                 }
                 return 0;
             }
+
             else if (calltype == 2)
             {
-                _Convert1by1(callcode, src, to);
-                return 0;
+                _Convert1by1(callcodes[0], src, to, Helper.OpDataToBytes(calldata[0]));
             }
-            else if (calltype == 3)
+
+            /*
+                        else if (calltype == 3)
+                        {
+                            byte[] bytes = null;
+                            if (this.outModule.option.useSysCallInteropHash)
+                            {
+                                //now neovm use ineropMethod hash for syscall.
+                                bytes = BitConverter.GetBytes(callname.ToInteropMethodHash());
+                            }
+                            else
+                            {
+                                bytes = System.Text.Encoding.UTF8.GetBytes(callname);
+                                if (bytes.Length > 252) throw new Exception("string is to long");
+                            }
+                            byte[] outbytes = new byte[bytes.Length + 1];
+                            outbytes[0] = (byte)bytes.Length;
+                            Array.Copy(bytes, 0, outbytes, 1, bytes.Length);
+                            //bytes.Prepend 函数在 dotnet framework 4.6 编译不过
+                            _Convert1by1(VM.OpCode.SYSCALL, null, to, outbytes);
+                            return 0;
+                        }
+            */
+            else if (calltype == 7)
             {
-                var bytes = Encoding.UTF8.GetBytes(callname);
-                if (bytes.Length > 252) throw new Exception("string is to long");
-                byte[] outbytes = new byte[bytes.Length + 1];
-                outbytes[0] = (byte)bytes.Length;
-                Array.Copy(bytes, 0, outbytes, 1, bytes.Length);
-                //bytes.Prepend 函数在 dotnet framework 4.6 编译不过
-                _Convert1by1(VM.OpCode.SYSCALL, null, to, outbytes);
+                for (var j = 0; j < callcodes.Length; j++)
+                {
+
+                    if (callcodes[j] == VM.OpCode.SYSCALL)
+                    {
+                        //if(isHex)
+                        //{
+                        //    throw new Exception("neomachine OpCodeAttribute field OpData currently supports SYSCALL only with plain non-empty text (not hex)!");
+                        //}
+
+                        byte[] bytes = null;
+                        if (this.outModule.option.useSysCallInteropHash)
+                        {
+                            bytes = BitConverter.GetBytes(calldata[j].ToInteropMethodHash());
+                        }
+                        else
+                        {
+                            bytes = System.Text.Encoding.UTF8.GetBytes(calldata[j]);
+                            if (bytes.Length > 252) throw new Exception("string is to long");
+                        }
+                        byte[] outbytes = new byte[bytes.Length + 1];
+                        outbytes[0] = (byte)bytes.Length;
+                        Array.Copy(bytes, 0, outbytes, 1, bytes.Length);
+                        _Convert1by1(VM.OpCode.SYSCALL, null, to, outbytes);
+                    }
+                    else
+                    {
+                        byte[] opdata = Helper.OpDataToBytes(calldata[j]);
+
+                        _Convert1by1(callcodes[j], src, to, opdata);
+                    }
+                }
                 return 0;
             }
             else if (calltype == 4)
@@ -856,7 +1023,7 @@ namespace Neo.Compiler.MSIL
             ILType type;
             if (inModule.mapType.TryGetValue(typename, out type) == false)
             {
-                type = new ILType(null, method.DeclaringType);
+                type = new ILType(null, method.DeclaringType, logger);
                 inModule.mapType[typename] = type;
             }
 
@@ -905,14 +1072,14 @@ namespace Neo.Compiler.MSIL
                 this.addrconv.Clear();
                 foreach (int k in oldaddrconv.Keys)
                 {
-                    addrconv[k]=oldaddrconv[k];
+                    addrconv[k] = oldaddrconv[k];
                 }
             }
         }
         private int _ConvertNewArr(ILMethod method, OpCode src, NeoMethod to)
         {
             var type = src.tokenType;
-            if (type != "System.Byte")
+            if ((type != "System.Byte") && (type != "System.SByte"))
             {
                 _Convert1by1(VM.OpCode.NEWARRAY, src, to);
                 int n = method.GetNextCodeAddr(src.addr);
@@ -933,13 +1100,13 @@ namespace Neo.Compiler.MSIL
                         }
                         return 3;
                     }
-                    throw new Exception("not support this type's init array.");
+                    throw new Exception($"not support this type's init array. type: {type}");
 
                 }
                 return 0;
                 //this.logger.Log("_ConvertNewArr::not support type " + type + " for array.");
             }
-            else
+            else // (type == "System.Byte") || (type == "System.SByte")
             {
                 var code = to.body_Codes.Last().Value;
                 //we need a number
@@ -962,8 +1129,11 @@ namespace Neo.Compiler.MSIL
                 int n3 = method.GetNextCodeAddr(n2);
                 int n4 = method.GetNextCodeAddr(n3);
                 if (n >= 0 && n2 >= 0 && n3 >= 0 && method.body_Codes[n].code == CodeEx.Dup && method.body_Codes[n2].code == CodeEx.Ldtoken && method.body_Codes[n3].code == CodeEx.Call)
-                {//這是在初始化數組
+                {
+                    // 這是在初始化數組
+                    // en: this is the initialization array
 
+                    // System.Byte or System.SByte
                     var data = method.body_Codes[n2].tokenUnknown as byte[];
                     this._ConvertPush(data, src, to);
 
@@ -1088,9 +1258,10 @@ namespace Neo.Compiler.MSIL
             //now stack  a index, a value
 
             //getarray
-            _Insert1(VM.OpCode.FROMALTSTACK, null, to);
-            _Insert1(VM.OpCode.DUP, null, to);
-            _Insert1(VM.OpCode.TOALTSTACK, null, to);
+            //_Convert1by1(VM.OpCode.FROMALTSTACK, null, to);
+            //_Convert1by1(VM.OpCode.DUP, null, to);
+            //_Convert1by1(VM.OpCode.TOALTSTACK, null, to);
+            _Convert1by1(VM.OpCode.DUPFROMALTSTACK, null, to);
 
             _InsertPush(2, "", to);//move item
             _Insert1(VM.OpCode.ROLL, null, to);
@@ -1156,10 +1327,11 @@ namespace Neo.Compiler.MSIL
                     {
                         if (attr.AttributeType.Name == "OpCodeAttribute")
                         {
-                            //var _type = attr.ConstructorArguments[0].Type;
-                            var value = (byte)attr.ConstructorArguments[0].Value;
-                            VM.OpCode v = (VM.OpCode)value;
-                            _Insert1(v, null, to);
+                            //object[] op = method.method.Annotations[0] as object[];
+                            var opcode = (VM.OpCode)attr.ConstructorArguments[0].Value;
+                            var opdata = Helper.OpDataToBytes((string)attr.ConstructorArguments[1].Value);
+                            VM.OpCode v = (VM.OpCode)opcode;
+                            _Convert1by1(v, src, to, opdata);
                             return 0;
                         }
 
@@ -1190,7 +1362,7 @@ namespace Neo.Compiler.MSIL
             //_Convert1by1(VM.OpCode.CLONESTRUCTONLY, src, to);
 
             _ConvertPush(id, null, to);//index
-            _Convert1by1(VM.OpCode.SWAP, null, to);//把item 拿上來 
+            _Convert1by1(VM.OpCode.SWAP, null, to);//把item 拿上來
 
             _Convert1by1(VM.OpCode.SETITEM, null, to);//修改值 //item //index //array
             return 0;
@@ -1210,3 +1382,7 @@ namespace Neo.Compiler.MSIL
         }
     }
 }
+ 
+ 
+ 
+ 

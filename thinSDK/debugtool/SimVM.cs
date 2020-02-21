@@ -32,6 +32,7 @@ namespace ThinNeo.Debug
         }
         public bool CalcCalcStack(VM.OpCode op)
         {
+            /*
             if (op == VM.OpCode.TOALTSTACK)
             {
                 var p = CalcStack.Pop();
@@ -82,14 +83,17 @@ namespace ThinNeo.Debug
             //    CalcStack.Push(CalcStack.Remove(n));
             //    return true;
             //}
+            */
             return false;
         }
         public void CalcCalcStack(SmartContract.Debug.Op stackop, SmartContract.Debug.StackItem item)
         {
+            System.Console.WriteLine(stackop.type +":"+ stackop.ind);
+
             if (stackop.type == SmartContract.Debug.OpType.Push)
             {
-                if (item == null)
-                    throw new Exception(stackop.type + "can not pass null");
+                //if (item == null)
+                //    throw new Exception(stackop.type + "can not pass null");
                 CalcStack.Push(item);
             }
             else if (stackop.type == SmartContract.Debug.OpType.Insert)
@@ -118,7 +122,12 @@ namespace ThinNeo.Debug
             }
             else if (stackop.type == SmartContract.Debug.OpType.Remove)
             {
-                CalcStack.Remove(stackop.ind);
+                if(stackop.ind >=0 )
+                    CalcStack.Remove(stackop.ind);
+            }
+            else if (stackop.type == SmartContract.Debug.OpType.Reserve)
+            {
+                CalcStack.Reverse();
             }
             if (stackop.type != SmartContract.Debug.OpType.Peek)//peek 不造成状态变化
                 StateID++;
@@ -239,7 +248,7 @@ namespace ThinNeo.Debug
                     lastScript.ops.Add(_nop);
                     try
                     {
-                        if (op.op == VM.OpCode.APPCALL)//不造成栈影响，由目标script影响
+                        if (op.op == VM.OpCode.SYSCALL)//不造成栈影响，由目标script影响
                         {
                             var _script = op.subScript;
                             var outscript = new SmartContract.Debug.LogScript(op.subScript.hash);

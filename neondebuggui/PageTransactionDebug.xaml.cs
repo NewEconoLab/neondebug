@@ -70,7 +70,7 @@ namespace client
             if (System.IO.Directory.Exists(pathLog) == false)
                 System.IO.Directory.CreateDirectory(pathLog);
             this.listLoadInfo.Items.Clear();
-            try
+            //try
             {
                 //服务器暂时没开启fulllog
                 try
@@ -88,11 +88,10 @@ namespace client
                 }
 
 
-
+                debugtool.Load(pathLog, pathScript, transid);
                 try
                 {
 
-                    debugtool.Load(pathLog, pathScript, transid);
                 }
                 catch (Exception err1)
                 {
@@ -117,11 +116,11 @@ namespace client
                 InitTreeCode();
                 InitCareList();
             }
-            catch (Exception err)
-            {
-
-                this.listLoadInfo.Items.Add(err.Message);
-            }
+            //catch (Exception err)
+            //{
+            //
+            //    this.listLoadInfo.Items.Add(err.Message);
+            //}
         }
 
         private byte[] HexString2Bytes(string transid)
@@ -238,7 +237,8 @@ namespace client
                 itemop.Header = op.GetHeader();
                 if (op.op == ThinNeo.VM.OpCode.SYSCALL && op.param != null)
                 {
-                    string p = System.Text.Encoding.ASCII.GetString(op.param);
+                    uint api = BitConverter.ToUInt32(op.param,0);
+                    string p = methodHelper.Ins.GetMethodName(api);
                     itemop.Header = op.GetHeader() + " " + p;
                 }
                 if (op.error)

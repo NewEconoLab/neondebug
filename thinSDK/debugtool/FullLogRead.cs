@@ -25,6 +25,7 @@ namespace ThinNeo.SmartContract.Debug
         Push,
         Remove,
         Set,
+        Reserve,
     }
     public struct Op
     {
@@ -112,40 +113,12 @@ namespace ThinNeo.SmartContract.Debug
                 return strvalue;
             }
         }
-        //public static MyJson.JsonNode_Object StatkItemToJson(StackItem item)
-        //{
-        //    //MyJson.JsonNode_Object json = new MyJson.JsonNode_Object();
-        //    //var type = item.GetType().Name;
-        //    //if (type == "InteropInterface")
-        //    //{
-        //    //    json.SetDictValue(type, item.GetInterface<VM.IInteropInterface>().GetType().Name);
-        //    //}
-        //    //else if (type == "Boolean")
-        //    //{
-        //    //    json.SetDictValue(type, item.GetBoolean().ToString());
-        //    //}
-        //    //else if (type == "ByteArray")
-        //    //{
-        //    //    json.SetDictValue(type, item.GetByteArray().ToHexString());
-        //    //}
-        //    //else if (type == "Integer")
-        //    //{
-        //    //    json.SetDictValue(type, item.GetBigInteger().ToString());
-        //    //}
-        //    //else if (item.IsArray || item.IsStruct)
-        //    //{
-        //    //    MyJson.JsonNode_Array array = new MyJson.JsonNode_Array();
-        //    //    json.SetDictValue(type, array);
-        //    //    foreach (var i in item.GetArray())
-        //    //    {
-        //    //        array.Add(StatkItemToJson(i));
-        //    //    }
-        //    //}
-        //    //return json;
-        //}
+
         public static StackItem FromJson(MyJson.JsonNode_Object json)
         {
             StackItem item = new StackItem();
+            if (json.Keys.ToArray().Length == 0)
+                return item;
             item.type = json.Keys.ToArray()[0];
             var strvalue = json[item.type] as MyJson.JsonNode_ValueString;
             var arrayvalue = json[item.type] as MyJson.JsonNode_Array;
@@ -240,10 +213,7 @@ namespace ThinNeo.SmartContract.Debug
         public string GetHeader()
         {
             string name = addr.ToString("x04") + ":";
-            if (op > VM.OpCode.PUSHBYTES1 && op < VM.OpCode.PUSHBYTES75)
-                return name + "PUSHBYTES" + (op - VM.OpCode.PUSHBYTES1);
-            else
-                return name + op.ToString();
+            return name + op.ToString();
         }
         public LogOp(int addr, VM.OpCode op)
         {
@@ -317,7 +287,17 @@ namespace ThinNeo.SmartContract.Debug
         {
             var opstr = json["op"].AsString();
             var addr = json["addr"].AsInt();
-            var op = (VM.OpCode)Enum.Parse(typeof(VM.OpCode), opstr);
+            if (opstr == "CALL_I")
+                opstr = "CALL";
+            Console.WriteLine(opstr);
+            var op = VM.OpCode.PUSH2;
+            try
+            {
+                op = (VM.OpCode)Enum.Parse(typeof(VM.OpCode), opstr);
+            }
+            catch {
+
+            }
             LogOp _op = new LogOp(addr, op);
             if (json.ContainsKey("stack"))
             {
@@ -342,7 +322,7 @@ namespace ThinNeo.SmartContract.Debug
             {
                 _op.param = ThinNeo.Debug.DebugTool.HexString2Bytes(json["param"].AsString());
             }
-            if (json.ContainsKey("result"))
+            if (json.ContainsKey("result")&& (json["result"] as MyJson.JsonNode_Object).Keys.Count>0)
             {
                 _op.opresult = StackItem.FromJson(json["result"] as MyJson.JsonNode_Object);
             }
@@ -376,7 +356,6 @@ namespace ThinNeo.SmartContract.Debug
             return op;
         }
     }
-
 
     public class DumpInfo
     {

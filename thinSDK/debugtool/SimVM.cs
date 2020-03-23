@@ -250,11 +250,8 @@ namespace ThinNeo.Debug
                     {
                         if (op.op == VM.OpCode.SYSCALL)//不造成栈影响，由目标script影响
                         {
-                            var _script = op.subScript;
-                            var outscript = new SmartContract.Debug.LogScript(op.subScript.hash);
-                            outscript.parent = lastScript;
-                            _nop.subScript = outscript;
-                            lastScript = outscript;
+                            uint api = BitConverter.ToUInt32(op.param, 0);
+                            string p = methodHelper.Ins.GetMethodName(api);
                             //有可能造成影响
                             if (op.stack != null)
                             {
@@ -271,13 +268,24 @@ namespace ThinNeo.Debug
                                     }
                                 }
                             }
+
                             runstate.PushExe(script.hash);
                             if (stateClone.ContainsKey(runstate.StateID) == false)
                             {
                                 stateClone[runstate.StateID] = (Debug.State)runstate.Clone();
                             }
-                            ExecuteScript(runstate, _script);
-                            mapState[_nop] = runstate.StateID;
+
+                            if (p == "System.Contract.Call" || p == "System.Contract.CallEx")
+                            {
+                                var _script = op.subScript;
+                                var outscript = new SmartContract.Debug.LogScript(op.subScript.hash);
+                                outscript.parent = lastScript;
+                                _nop.subScript = outscript;
+                                lastScript = outscript;
+                                ExecuteScript(runstate, _script);
+                                mapState[_nop] = runstate.StateID;
+                            }
+                            careinfo.Add(new CareItem(p, runstate));
                         }
                         else if (op.op == VM.OpCode.CALL)//造成栈影响 就是个jmp
                         {
@@ -312,12 +320,6 @@ namespace ThinNeo.Debug
                         }
                         else
                         {
-                            if (op.op == VM.OpCode.SYSCALL)//syscall比较独特，有些syscall 可以产生独立的log
-                            {
-                                var name = System.Text.Encoding.ASCII.GetString(op.param);
-                                careinfo.Add(new CareItem(name, runstate));
-                                //runstate.DoSysCall(op.op);
-                            }
                             if (runstate.CalcCalcStack(op.op) == false)
                             {
                                 if (op.stack != null)

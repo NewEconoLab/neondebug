@@ -66,7 +66,14 @@ namespace ThinNeo.Debug
             "System.Blockchain.GetTransactionFromBlock",
             "System.Blockchain.GetContract",
             "System.Binary.Serialize",
-            "System.Binary.Deserialize"
+            "System.Binary.Deserialize",
+                        //新增
+            "Neo.Crypto.ECDsaVerify",
+            "Neo.Crypto.ECDsaCheckMultiSig",
+            "Neo.Native.Deploy",
+            "Neo.Native.Tokens.NEO",
+            "Neo.Native.Tokens.GAS",
+            "Neo.Native.Policy"
         };
 
         public methodHelper()
